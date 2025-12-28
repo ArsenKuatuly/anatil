@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AnaTil</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../public/style.css">
 </head>
 <body>
 
@@ -12,9 +12,9 @@
         <div class="logo">AnaTil</div>
 
         <nav class="nav">
-            <a href="#" data-key="about">О нас</a>
-            <a href="#" data-key="benefits">Преимущества</a>
-            <a href="#" data-key="courses_nav">Курсы</a>
+            <a href="#promo" data-key="about">О нас</a>
+            <a href="#reasons" data-key="benefits">Преимущества</a>
+            <a href="#courses" data-key="courses_nav">Курсы</a>
             <a href="#" data-key="contacts">Контакты</a>
         </nav>
 
@@ -26,7 +26,7 @@
                 <button data-lang="en" class="lang">EN</button>
             </div>
 
-            <button class="btn" id="cta" data-key="check_level">Проверить свой уровень</button>
+            <a href="http://localhost:3000/auth.html"><button class="btn" id="cta" data-key="check_level">Проверить свой уровень</button></a>
         </div>
     </div>
 </header>
@@ -63,7 +63,7 @@
     </div>
 </section>
 
-<section class="promo">
+<section id="promo">
 
         <div class="promo__content">
             <h2 class="promo__title" data-key="promo_title">
@@ -83,7 +83,7 @@
 </section>
 
 
-<section class="reasons">
+<section id="reasons">
     <h2 class="reasons__title" data-key="reasons_title">
         9 причин, почему вы должны выбрать AnaTil
     </h2>
@@ -136,7 +136,7 @@
     </div>
 </section>
 
-<section class="courses">
+<section id="courses">
     <h2 class="courses__title" data-key="courses_title">Доступные курсы</h2>
 
     <div class="courses__grid">
@@ -228,8 +228,8 @@
 
 
 
-<script src="/scripts/header.js"></script>
-<script src="/scripts/i18n.js"></script>
+<script src="/header.js"></script>
+<script src="/i18n.js"></script>
 
 </body>
 </html>

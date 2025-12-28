@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="auth">
+    <div class="auth__card">
+        <h2 class="auth__title">Авторизация</h2>
+
+        <label class="auth__label">Логин</label>
+        <input class="auth__input" type="text" id="login" />
+
+        <label class="auth__label">Пароль</label>
+        <input class="auth__input" type="password" id="password" />
+
+        <button class="auth__button" id="loginBtn">Войти</button>
+
+        <p class="auth__footer">
+            Нет аккаунта?
+            <a href="register.html" class="auth__link">Создать</a>
+        </p>
+
+        <p class="auth__message" id="message"></p>
+    </div>
+</div>
+
+<script src="/scripts/auth.js" defer></script>
+</body>
+</html>

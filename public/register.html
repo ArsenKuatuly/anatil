@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<div class="auth auth--register">
+    <div class="auth__card">
+        <h2 class="auth__title">Регистрация</h2>
+
+        <label class="auth__label">Логин</label>
+        <input class="auth__input" type="text" id="login" />
+
+        <label class="auth__label">Пароль</label>
+        <input class="auth__input" type="password" id="password" />
+
+        <label class="auth__label">Повторите пароль</label>
+        <input class="auth__input" type="password" id="passwordRepeat" />
+
+        <button class="auth__button" id="registerBtn">
+            Создать аккаунт
+        </button>
+
+        <p class="auth__footer">
+            Уже есть аккаунт?
+            <a href="/public/auth.html" class="auth__link">Войти</a>
+        </p>
+
+        <p class="auth__message" id="message"></p>
+    </div>
+</div>
+
+<script src="/scripts/register.js"></script>
+</body>
+</html>
