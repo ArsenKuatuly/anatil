@@ -81,7 +81,7 @@ body {
     opacity: 0.9;
 }
 
-/* Контент-заглушка */
+
 .content {
     padding-top: 140px;
     text-align: center;
@@ -117,11 +117,10 @@ body {
     padding-top: 160px;
 }
 
-/* Верх */
 .hero__top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: flex-end;
     margin-bottom: 40px;
 }
 
@@ -138,7 +137,7 @@ body {
     line-height: 1.4;
 }
 
-/* Карточка */
+
 .hero__card {
     background: linear-gradient(120deg, #0f172a, #020617);
     border-radius: 20px;
@@ -148,14 +147,14 @@ body {
     align-items: center;
 }
 
-/* Контент внутри */
+
 .hero__content {
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-/* Бейдж */
+
 .badge {
     background: #ff6b00;
     color: #fff;
@@ -165,7 +164,7 @@ body {
     width: fit-content;
 }
 
-/* Теги */
+
 .tags {
     display: flex;
     flex-wrap: wrap;
@@ -181,7 +180,7 @@ body {
     font-weight: 500;
 }
 
-/* Кнопка */
+
 .hero__btn {
     margin-top: 10px;
     background: #6c5ce7;
@@ -197,3 +196,63 @@ body {
 .hero__btn:hover {
     opacity: 0.9;
 }
+
+/* reasons */
+.reasons {
+    width: 90%;
+    margin: 120px auto;
+}
+
+.reasons__title {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 48px;
+}
+
+/* Сетка */
+.reasons__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* Карточка */
+.reason {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.reason:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+/* Номер */
+.reason__num {
+    width: 40px;
+    height: 40px;
+    background: #f4f3ff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #6c5ce7;
+    font-size: 18px;
+}
+
+/* Текст */
+.reason p {
+    font-size: 16px;
+    line-height: 1.45;
+    max-width: 90%;
+}
+
+
