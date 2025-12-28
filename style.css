@@ -109,3 +109,91 @@ body {
     color: #fff;
 }
 
+/* hero */
+
+.hero {
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 160px;
+}
+
+/* Верх */
+.hero__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+}
+
+.hero__title {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.hero__subtitle {
+    max-width: 360px;
+    font-size: 18px;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Карточка */
+.hero__card {
+    background: linear-gradient(120deg, #0f172a, #020617);
+    border-radius: 20px;
+    padding: 40px;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+}
+
+/* Контент внутри */
+.hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Бейдж */
+.badge {
+    background: #ff6b00;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 500;
+    width: fit-content;
+}
+
+/* Теги */
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tags span {
+    background: #fff;
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Кнопка */
+.hero__btn {
+    margin-top: 10px;
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.hero__btn:hover {
+    opacity: 0.9;
+}
