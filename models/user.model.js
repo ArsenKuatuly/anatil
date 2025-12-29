@@ -1,9 +1,4 @@
-const db = require("../db");
+// файл оставляем для архитектуры,
+// но CREATE TABLE тут больше не делаем
 
-db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        login TEXT UNIQUE,
-        password TEXT
-    )
-`);
+// если хочешь — тут можно позже вынести методы

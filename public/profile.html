@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Профиль пользователя</title>
+    <style>
+        /* ===== BEM scoped styles ===== */
+        .profile-app {
+            display: flex;
+            min-height: 100vh;
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-sidebar {
+            width: 240px;
+            background: #1e88e5;
+            color: #fff;
+            padding: 24px;
+        }
+
+        .profile-sidebar__avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            margin-bottom: 12px;
+        }
+
+        .profile-sidebar__welcome {
+            font-weight: bold;
+            margin-bottom: 32px;
+        }
+
+        .profile-sidebar__menu-link {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 0;
+            opacity: 0.9;
+        }
+
+        .profile-sidebar__menu-link--active {
+            font-weight: bold;
+            opacity: 1;
+        }
+
+        .profile-content {
+            flex: 1;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 16px 0 0 16px;
+        }
+
+        .profile-content__title {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .profile-form__grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 32px;
+            max-width: 800px;
+        }
+
+        .profile-form__field-label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .profile-form__input,
+        .profile-form__select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f9fafb;
+        }
+
+        .profile-form__actions {
+            margin-top: 30px;
+        }
+
+        .profile-form__submit {
+            background: #1e88e5;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .profile-form__submit:hover {
+            background: #1669bb;
+        }
+
+        @media (max-width: 768px) {
+            .profile-form__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-app">
+    <aside class="profile-sidebar">
+        <div class="profile-sidebar__avatar"></div>
+        <div class="profile-sidebar__welcome">
+            Добро пожаловать, <span id="sidebarLogin"></span>
+        </div>
+
+        <nav>
+            <a href="#" class="profile-sidebar__menu-link profile-sidebar__menu-link--active">Мой профиль</a>
+            <a href="#" class="profile-sidebar__menu-link">Доступные курсы</a>
+        </nav>
+    </aside>
+
+    <main class="profile-content">
+        <h2 class="profile-content__title">Личная информация</h2>
+
+        <form class="profile-form" id="profileForm">
+            <div class="profile-form__grid">
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Имя</label>
+                    <input
+                            class="profile-form__input"
+                            type="text"
+                            name="first_name"
+                            placeholder="Имя"
+                    />
+                </div>
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Личный телефон</label>
+                    <input
+                            class="profile-form__input"
+                            type="tel"
+                            name="phone"
+                            placeholder="+7 777 777 77 77"
+                    />
+                </div>
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Фамилия</label>
+                    <input
+                            class="profile-form__input"
+                            type="text"
+                            name="last_name"
+                            placeholder="Фамилия"
+                    />
+                </div>
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Страна, город</label>
+                    <select
+                            class="profile-form__select"
+                            name="location"
+                    >
+                        <option value="">Выберите</option>
+                        <option>Казахстан, Астана</option>
+                        <option>Казахстан, Алматы</option>
+                        <option>Казахстан, Шымкент</option>
+                        <option>Россия, Москва</option>
+                    </select>
+                </div>
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Имя пользователя</label>
+                    <input
+                            class="profile-form__input"
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                    />
+                </div>
+
+                <div class="profile-form__field">
+                    <label class="profile-form__field-label">Email</label>
+                    <input
+                            class="profile-form__input"
+                            type="email"
+                            name="email"
+                            placeholder="mail@example.com"
+                    />
+                </div>
+
+            </div>
+
+            <div class="profile-form__actions">
+                <button
+                        class="profile-form__submit"
+                        type="submit"
+                >
+                    Сохранить изменения
+                </button>
+            </div>
+        </form>
+    </main>
+</div>
+<script src="profile.js"></script>
+<script src="usersidebar.js"></script>
+</body>
+</html>

@@ -1,15 +1,12 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+const mysql = require("mysql2/promise");
 
-const db = new sqlite3.Database(
-    path.join(__dirname, "database.db"),
-    (err) => {
-        if (err) {
-            console.error("Ошибка БД:", err.message);
-        } else {
-            console.log("База данных подключена");
-        }
-    }
-);
+const pool = mysql.createPool({
+    host: "localhost",
+    user: "root",        // поменяй
+    password: "Arsenkaz2005",        // поменяй
+    database: "auth_db",
+    waitForConnections: true,
+    connectionLimit: 10
+});
 
-module.exports = db;
+module.exports = pool;
