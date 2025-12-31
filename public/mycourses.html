@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Доступные курсы</title>
+
+    <style>
+        .profile-app {
+            display: flex;
+            min-height: 100vh;
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-sidebar {
+            width: 240px;
+            background: #1e88e5;
+            color: #fff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-sidebar__avatar-wrapper {
+            width: 96px;
+            height: 96px;
+            margin-bottom: 12px;
+        }
+
+        .profile-sidebar__avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.6);
+        }
+
+        .profile-sidebar__welcome {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 32px;
+            font-weight: bold;
+        }
+
+        .profile-sidebar__menu-link {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 0;
+            opacity: 0.9;
+        }
+
+        .profile-sidebar__menu-link--active {
+            font-weight: bold;
+            opacity: 1;
+        }
+
+        .profile-content {
+            flex: 1;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 16px 0 0 16px;
+        }
+
+        .profile-content__title {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .profile-sidebar__back-btn {
+            margin-top: auto;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .profile-sidebar__back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="profile-app">
+    <aside class="profile-sidebar">
+
+        <div class="profile-sidebar__avatar-wrapper">
+            <img
+                    id="avatarImg"
+                    src="/uploads/avatars/default.png"
+                    class="profile-sidebar__avatar-img"
+                    alt="Avatar"
+            />
+
+        </div>
+
+        <div class="profile-sidebar__welcome">
+            Добро пожаловать,<br>
+            <span id="sidebarLogin">arsen1</span>
+        </div>
+
+        <nav>
+            <a href="/profile.html" class="profile-sidebar__menu-link">
+                Мой профиль
+            </a>
+            <a href="/mycourses.html" class="profile-sidebar__menu-link profile-sidebar__menu-link--active">
+                Доступные курсы
+            </a>
+
+        </nav>
+
+        <button class="profile-sidebar__back-btn" id="backBtn">
+            ← Назад
+        </button>
+
+    </aside>
+
+    <main class="profile-content">
+        <h2 class="profile-content__title">
+            Доступные вам курсы
+        </h2>
+
+        <p>
+            Здесь в будущем будут отображаться курсы,
+            доступные для вашего аккаунта.
+        </p>
+    </main>
+</div>
+
+<script src="usersidebar.js"></script>
+</body>
+</html>

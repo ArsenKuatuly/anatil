@@ -53,6 +53,11 @@ body {
     color: #555;
 }
 
+a{
+    text-decoration: none;
+    color: #000;
+}
+
 /* Правая часть */
 .header__actions {
     display: flex;
@@ -558,39 +563,4 @@ body {
     border-color: #dc2626;
 }
 
-.test {
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
-}
 
-.test__card {
-    width: 500px;
-    padding: 20px;
-    border-radius: 12px;
-    background: #fff;
-}
-
-.test__title {
-    text-align: center;
-}
-
-.test__question {
-    margin-bottom: 20px;
-}
-
-.test__option {
-    display: block;
-    margin: 5px 0;
-}
-
-.test__button {
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-}
-
-.test__result {
-    margin-top: 20px;
-    font-size: 16px;
-}

@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Профиль пользователя</title>
+
     <style>
-        /* ===== BEM scoped styles ===== */
         .profile-app {
             display: flex;
             min-height: 100vh;
@@ -18,19 +18,50 @@
             background: #1e88e5;
             color: #fff;
             padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .profile-sidebar__avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.25);
+        .profile-sidebar__avatar-wrapper {
+            position: relative;
+            width: 96px;
+            height: 96px;
             margin-bottom: 12px;
         }
 
+        .profile-sidebar__avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.6);
+        }
+
+        .profile-sidebar__avatar-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.45);
+            color: #fff;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .profile-sidebar__avatar-wrapper:hover
+        .profile-sidebar__avatar-overlay {
+            opacity: 1;
+        }
+
         .profile-sidebar__welcome {
-            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
             margin-bottom: 32px;
+            font-weight: bold;
         }
 
         .profile-sidebar__menu-link {
@@ -95,34 +126,65 @@
             cursor: pointer;
         }
 
-        .profile-form__submit:hover {
-            background: #1669bb;
+        .profile-sidebar__back-btn {
+            margin-top: auto;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
         }
 
-        @media (max-width: 768px) {
-            .profile-form__grid {
-                grid-template-columns: 1fr;
-            }
-
-            .profile-sidebar {
-                width: 200px;
-            }
+        .profile-sidebar__back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
+
     </style>
 </head>
 <body>
 
 <div class="profile-app">
     <aside class="profile-sidebar">
-        <div class="profile-sidebar__avatar"></div>
+
+        <!-- AVATAR -->
+        <div class="profile-sidebar__avatar-wrapper">
+            <img
+                    src="/uploads/avatars/default.png"
+                    class="profile-sidebar__avatar-img"
+                    id="avatarImg"
+                    alt="Avatar"
+            />
+
+            <label class="profile-sidebar__avatar-overlay">
+                Сменить
+                <input type="file" id="avatarInput" accept="image/*" hidden />
+            </label>
+        </div>
+
         <div class="profile-sidebar__welcome">
-            Добро пожаловать, <span id="sidebarLogin"></span>
+            Добро пожаловать,<br>
+            <span id="sidebarLogin">arsen1</span>
         </div>
 
         <nav>
-            <a href="#" class="profile-sidebar__menu-link profile-sidebar__menu-link--active">Мой профиль</a>
-            <a href="#" class="profile-sidebar__menu-link">Доступные курсы</a>
+            <a href="/profile.html" class="profile-sidebar__menu-link profile-sidebar__menu-link--active">
+                Мой профиль
+            </a>
+            <a href="/mycourses.html" class="profile-sidebar__menu-link">
+                Доступные курсы
+            </a>
+
         </nav>
+
+        <button class="profile-sidebar__back-btn" id="backBtn">
+            ← Назад
+        </button>
+
+
     </aside>
 
     <main class="profile-content">
@@ -131,42 +193,24 @@
         <form class="profile-form" id="profileForm">
             <div class="profile-form__grid">
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Имя</label>
-                    <input
-                            class="profile-form__input"
-                            type="text"
-                            name="first_name"
-                            placeholder="Имя"
-                    />
+                    <input class="profile-form__input" name="first_name" />
                 </div>
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Личный телефон</label>
-                    <input
-                            class="profile-form__input"
-                            type="tel"
-                            name="phone"
-                            placeholder="+7 777 777 77 77"
-                    />
+                    <input class="profile-form__input" name="phone" />
                 </div>
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Фамилия</label>
-                    <input
-                            class="profile-form__input"
-                            type="text"
-                            name="last_name"
-                            placeholder="Фамилия"
-                    />
+                    <input class="profile-form__input" name="last_name" />
                 </div>
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Страна, город</label>
-                    <select
-                            class="profile-form__select"
-                            name="location"
-                    >
+                    <select class="profile-form__select" name="location">
                         <option value="">Выберите</option>
                         <option>Казахстан, Астана</option>
                         <option>Казахстан, Алматы</option>
@@ -175,39 +219,27 @@
                     </select>
                 </div>
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Имя пользователя</label>
-                    <input
-                            class="profile-form__input"
-                            type="text"
-                            name="username"
-                            placeholder="Username"
-                    />
+                    <input class="profile-form__input" name="username" />
                 </div>
 
-                <div class="profile-form__field">
+                <div>
                     <label class="profile-form__field-label">Email</label>
-                    <input
-                            class="profile-form__input"
-                            type="email"
-                            name="email"
-                            placeholder="mail@example.com"
-                    />
+                    <input class="profile-form__input" name="email" />
                 </div>
 
             </div>
 
             <div class="profile-form__actions">
-                <button
-                        class="profile-form__submit"
-                        type="submit"
-                >
+                <button class="profile-form__submit" type="submit">
                     Сохранить изменения
                 </button>
             </div>
         </form>
     </main>
 </div>
+
 <script src="profile.js"></script>
 <script src="usersidebar.js"></script>
 </body>

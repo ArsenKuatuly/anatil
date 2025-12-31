@@ -2,11 +2,45 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const path = require("path");
-const db = require("../db");
+const fs = require("fs");
+const multer = require("multer");
 
+const db = require("../db");
 require("../models/user.model");
 
 const app = express();
+
+app.use(express.static("public"));
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, "../public/uploads/avatars");
+
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `user_${req.session.userId}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith("image/")) {
+            return cb(new Error("Только изображения"));
+        }
+        cb(null, true);
+    }
+});
+
+
 
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
@@ -108,7 +142,18 @@ app.post("/login", async (req, res) => {
 app.get("/api/profile", auth, async (req, res) => {
     try {
         const [rows] = await db.execute(
-            "SELECT * FROM user_profiles WHERE user_id = ?",
+            `
+            SELECT
+                first_name,
+                last_name,
+                phone,
+                location,
+                username,
+                email,
+                avatar
+            FROM user_profiles
+            WHERE user_id = ?
+            `,
             [req.session.userId]
         );
 
@@ -121,6 +166,9 @@ app.get("/api/profile", auth, async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
+
+
 
 /* ================= SAVE PROFILE ================= */
 app.post("/api/profile", auth, async (req, res) => {
@@ -165,15 +213,86 @@ app.post("/api/profile", auth, async (req, res) => {
     }
 });
 
+
+app.post(
+    "/api/profile/avatar",
+    auth,
+    upload.single("avatar"),
+    async (req, res) => {
+
+        const avatarPath = `/uploads/avatars/${req.file.filename}`;
+
+        await db.execute(
+            `
+            INSERT INTO user_profiles (user_id, avatar)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE avatar = VALUES(avatar)
+            `,
+            [req.session.userId, avatarPath]
+        );
+
+        res.json({
+            success: true,
+            avatar: avatarPath
+        });
+    }
+);
+
 /* ================= CURRENT USER ================= */
-app.get("/api/me", auth, (req, res) => {
-    res.json({
-        success: true,
-        user: {
-            id: req.session.userId,
-            login: req.session.login
-        }
-    });
+app.get("/api/me", auth, async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            "SELECT avatar FROM user_profiles WHERE user_id = ?",
+            [req.session.userId]
+        );
+
+        res.json({
+            success: true,
+            user: {
+                id: req.session.userId,
+                login: req.session.login,
+                avatar: rows[0]?.avatar || "/uploads/avatars/default.png"
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+/* ================= SAVE TEST RESULT ================= */
+app.post("/api/save-result", auth, async (req, res) => {
+    const {
+        totalScore,
+        level,
+        reading,
+        listening,
+        math
+    } = req.body;
+
+    try {
+        await db.execute(
+            `
+            INSERT INTO test_results
+            (user_id, total_score, level, reading_score, listening_score, math_score)
+            VALUES (?, ?, ?, ?, ?, ?)
+            `,
+            [
+                req.session.userId,
+                totalScore,
+                level,
+                reading,
+                listening,
+                math
+            ]
+        );
+
+        res.json({ success: true });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
 });
 
 
@@ -193,3 +312,9 @@ app.get("/logout", (req, res) => {
 app.listen(3000, () => {
     console.log("http://localhost:3000");
 });
+
+
+
+
+
+
