@@ -57,10 +57,14 @@ app.use(
 /* ================= AUTH MIDDLEWARE ================= */
 function auth(req, res, next) {
     if (!req.session.userId) {
-        return res.redirect("/");
+        return res.status(401).json({
+            success: false,
+            message: "Не авторизован"
+        });
     }
     next();
 }
+
 
 /* ================= REGISTRATION ================= */
 app.post("/register", async (req, res) => {
@@ -309,12 +313,107 @@ app.get("/logout", (req, res) => {
 });
 
 /* ================= START ================= */
-app.listen(3000, () => {
-    console.log("http://localhost:3000");
+
+
+
+
+/* ================= LAST TEST RESULT ================= */
+app.get("/api/test-result/last", auth, async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            `
+            SELECT
+                total_score,
+                level,
+                reading_score,
+                listening_score,
+                math_score,
+                created_at
+            FROM test_results
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            `,
+            [req.session.userId]
+        );
+
+        res.json({
+            success: true,
+            result: rows[0] || null
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+/* ================= GET MY TEST RESULT ================= */
+app.get("/api/my-result", auth, async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            `
+            SELECT
+                total_score,
+                level,
+                reading_score,
+                listening_score,
+                math_score,
+                created_at
+            FROM test_results
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            `,
+            [req.session.userId]
+        );
+
+        if (rows.length === 0) {
+            return res.json({
+                success: true,
+                result: null
+            });
+        }
+
+        res.json({
+            success: true,
+            result: rows[0]
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.get("/api/test-history", auth, async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            `
+            SELECT
+                total_score,
+                level,
+                created_at
+            FROM test_results
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            `,
+            [req.session.userId]
+        );
+
+        res.json({
+            success: true,
+            results: rows
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
 });
 
 
-
-
-
+app.listen(3000, () => {
+    console.log("http://localhost:3000");
+});
 

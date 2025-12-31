@@ -86,6 +86,27 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
+        #testActions button {
+            margin-right: 10px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #1e88e5;
+            color: #fff;
+        }
+
+        #testActions button:hover {
+            opacity: 0.9;
+        }
+
+        #historyBlock {
+            background: #f7f9fc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -126,16 +147,94 @@
 
     <main class="profile-content">
         <h2 class="profile-content__title">
-            Доступные вам курсы
+            Ваш уровень
         </h2>
 
-        <p>
-            Здесь в будущем будут отображаться курсы,
-            доступные для вашего аккаунта.
-        </p>
+        <div id="testResultBlock"></div>
+        <div id="testActions" style="margin-top:20px; display:none;">
+            <button id="retryTestBtn">Сдать тест заново</button>
+            <button id="historyBtn">История попыток</button>
+        </div>
+
+        <div id="historyBlock" style="margin-top:20px; display:none;"></div>
+
     </main>
+
 </div>
 
 <script src="usersidebar.js"></script>
+<script>
+    const resultBlock = document.getElementById("testResultBlock");
+    const actionsBlock = document.getElementById("testActions");
+    const historyBlock = document.getElementById("historyBlock");
+
+    const retryBtn = document.getElementById("retryTestBtn");
+    const historyBtn = document.getElementById("historyBtn");
+
+    fetch("/api/my-result")
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || !data.result) {
+                resultBlock.innerHTML = `
+                <p>
+                    Вы ещё не проходили тест.<br>
+                    <a href="/test.html"><b>Пройдите тест, чтобы узнать ваш уровень</b></a>
+                </p>
+            `;
+                return;
+            }
+
+            resultBlock.innerHTML = `
+            <p><b>Набранный вами балл:</b> ${data.result.total_score}</p>
+            <p><b>Ваш уровень:</b> ${data.result.level}</p>
+            <p style="opacity:0.6;font-size:13px">
+                Последнее прохождение:
+                ${new Date(data.result.created_at).toLocaleDateString()}
+            </p>
+        `;
+
+            actionsBlock.style.display = "block";
+        })
+        .catch(err => {
+            console.error(err);
+            resultBlock.innerHTML = "<p>Ошибка загрузки результата</p>";
+        });
+
+    /* ===== СДАТЬ ЗАНОВО ===== */
+    retryBtn.addEventListener("click", () => {
+        window.location.href = "/test.html";
+    });
+
+    /* ===== ИСТОРИЯ ПОПЫТОК ===== */
+    historyBtn.addEventListener("click", () => {
+        historyBlock.style.display = "block";
+        historyBlock.innerHTML = "Загрузка истории...";
+
+        fetch("/api/test-history")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || data.results.length === 0) {
+                    historyBlock.innerHTML = "<p>История пуста</p>";
+                    return;
+                }
+
+                historyBlock.innerHTML = data.results.map((r, i) => `
+                <div style="margin-bottom:10px;">
+                    <b>Попытка ${i + 1}</b><br>
+                    Балл: ${r.total_score} | Уровень: ${r.level}<br>
+                    <span style="opacity:0.6;font-size:12px">
+                        ${new Date(r.created_at).toLocaleString()}
+                    </span>
+                </div>
+            `).join("");
+            })
+            .catch(() => {
+                historyBlock.innerHTML = "<p>Ошибка загрузки истории</p>";
+            });
+    });
+</script>
+
+
+
 </body>
 </html>

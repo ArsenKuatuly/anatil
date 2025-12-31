@@ -31,6 +31,111 @@
     </div>
 </header>
 
+<section class="tests">
+    <div class="tests__container">
+        <h2 class="tests__title">Виды тестирования</h2>
+
+        <div class="tests__list">
+
+            <!-- Card 1 -->
+            <div class="test-card">
+                <div class="test-card__header">
+                    <div class="test-card__icon">
+                        <img src="imgs/thirdexam.jpg" alt="LVL">
+                    </div>
+                    <h3 class="test-card__title">Проверить свой уровень</h3>
+                </div>
+
+                <ul class="test-card__info">
+                    <li class="test-card__item">30 Вопросов</li>
+                    <li class="test-card__item">Перевод слов</li>
+                    <li class="test-card__item">Грамотность</li>
+                    <li class="test-card__item">Слушание</li>
+                    <li class="test-card__item">40 минут</li>
+
+                </ul>
+
+                <a href="test.html" class="test-card__btn" id="startTestBtn">
+                    Начать тест
+                    <span class="test-card__arrow">→</span>
+                </a>
+
+
+
+            </div>
+
+            <!-- Card 2 -->
+            <div class="test-card">
+                <div class="test-card__header">
+                    <div class="test-card__icon">
+                        <img src="imgs/secondexam.png" alt="Prod">
+                    </div>
+                    <h3 class="test-card__title">Продвинутый тест</h3>
+                </div>
+
+                <ul class="test-card__info">
+                    <li class="test-card__item">50 Вопросов</li>
+                    <li class="test-card__item">Чтение</li>
+                    <li class="test-card__item">Слушание</li>
+                    <li class="test-card__item">Грамматика</li>
+                    <li class="test-card__item">100 Баллов</li>
+                </ul>
+
+                <button class="test-card__btn test-card__btn--disabled" disabled>
+                    Скоро
+                </button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="test-card">
+                <div class="test-card__header">
+                    <div class="test-card__icon">
+                        <img src="imgs/firstexam.png" alt="Exam">
+                    </div>
+                    <h3 class="test-card__title">
+                        Экзаменационный тест
+                    </h3>
+                </div>
+
+                <ul class="test-card__info">
+                    <li class="test-card__item">80 Вопросов</li>
+                    <li class="test-card__item">240 минут</li>
+                    <li class="test-card__item">140 баллов</li>
+                    <li class="test-card__item">Чтение</li>
+                    <li class="test-card__item">Слушание</li>
+                    <li class="test-card__item">Грамматика</li>
+                </ul>
+
+                <button class="test-card__btn test-card__btn--disabled" disabled>
+                    Скоро
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="confirmModal">
+    <div class="modal__content">
+        <h3 class="modal__title">Начать тест?</h3>
+        <p class="modal__text">
+            После начала теста таймер запустится.
+            Вы уверены, что хотите продолжить?
+        </p>
+
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--cancel" id="cancelBtn">
+                Отмена
+            </button>
+            <button class="modal__btn modal__btn--confirm" id="confirmBtn">
+                Да, начать
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 <section class="hero">
     <div class="hero__top">
         <h1 class="hero__title" data-key="hero_title">
@@ -231,6 +336,7 @@
 <script src="../header.js"></script>
 <script src="../i18n.js"></script>
 <script src="scroll.js"></script>
+<script src="modal_startexam.js"></script>
 
 <script>
     document.getElementById("logout").onclick = async () => {
@@ -238,6 +344,7 @@
         location.href = "/";
     };
 </script>
+
 
 </body>
 </html>

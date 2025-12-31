@@ -562,5 +562,192 @@ a{
 .auth__input--error {
     border-color: #dc2626;
 }
+.tests {
+    padding: 160px 0 0 0 ;
+    background: #ffffff;
+}
 
+.tests__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
+.tests__title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 50px;
+}
+
+.tests__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* Card */
+.test-card {
+    background: #f6f8fa;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-card__header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.test-card__icon {
+    width: 64px;
+    height: 64px;
+    background: #fff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-card__icon img {
+    width: 40px;
+    height: 40px;
+}
+
+.test-card__title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Badge */
+.test-card__badge {
+    background: #2f80ed;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-right: 6px;
+}
+
+/* Info list */
+.test-card__info {
+    list-style: none;
+    padding: 25px 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.test-card__item {
+    margin-bottom: 12px;
+    padding-left: 24px;
+    position: relative;
+    color: #444;
+}
+
+.test-card__item::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* Button */
+.test-card__btn {
+    background: #41bce8;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.test-card__btn:hover {
+    background: #2fa7d1;
+}
+
+.test-card__arrow {
+    font-size: 18px;
+}
+
+.test-card__btn--disabled {
+    background: #d3d8de;
+    color: #7a7a7a;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Можно чуть затемнить всю карточку */
+.test-card:has(.test-card__btn--disabled) {
+    opacity: 0.8;
+}
+
+/* Modal overlay */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Show modal */
+.modal--active {
+    display: flex;
+}
+
+/* Modal box */
+.modal__content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.modal__title {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+.modal__text {
+    color: #555;
+    margin-bottom: 25px;
+}
+
+/* Buttons */
+.modal__actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal__btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.modal__btn--cancel {
+    background: #e0e0e0;
+}
+
+.modal__btn--confirm {
+    background: #41bce8;
+    color: #fff;
+}

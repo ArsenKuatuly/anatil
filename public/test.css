@@ -113,7 +113,89 @@
     cursor: pointer;
 }
 
+.exam__btn {
+    background: #6c63ff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 .exam__next:disabled {
     background: #bdbdbd;
     cursor: not-allowed;
+}
+.exam__btn:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+}
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal--active {
+    display: flex;
+}
+
+.modal__content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+}
+
+.modal__title {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.modal__text {
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.modal__actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal__btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.modal__btn--cancel {
+    background: #e0e0e0;
+}
+
+.modal__btn--confirm {
+    background: #e53935;
+    color: #fff;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal--open {
+    display: flex;
 }

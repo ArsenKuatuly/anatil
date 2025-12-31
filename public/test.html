@@ -12,7 +12,7 @@
     <header class="exam__header">
         <div class="exam__logo">Тест на казахский</div>
 
-        <div class="exam__timer" id="timer">10:00</div>
+        <div class="exam__timer" id="timer"></div>
 
         <button class="exam__finish" type="button">
             Завершить тестирование
@@ -52,6 +52,10 @@
                 1 / 10
             </span>
 
+            <button class="exam__btn exam__btn--prev" id="prevBtn" disabled>
+                ← Предыдущий
+            </button>
+
             <button class="exam__next" id="nextBtn" disabled>
                 Следующий вопрос →
             </button>
@@ -59,6 +63,25 @@
 
     </div>
 
+</div>
+
+<div class="modal" id="finishModal">
+    <div class="modal__content">
+        <h3 class="modal__title">Завершить тестирование?</h3>
+        <p class="modal__text">
+            Вы уверены, что хотите завершить экзамен?
+            Все ответы будут сохранены, таймер остановится.
+        </p>
+
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--cancel" id="cancelFinish">
+                Отмена
+            </button>
+            <button class="modal__btn modal__btn--confirm" id="confirmFinish">
+                Завершить
+            </button>
+        </div>
+    </div>
 </div>
 
 <script src="test.js"></script>

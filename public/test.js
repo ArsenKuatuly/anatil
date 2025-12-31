@@ -7,6 +7,8 @@ const progressEl = exam.querySelector("#progress");
 const nextBtn = exam.querySelector("#nextBtn");
 const timerEl = exam.querySelector("#timer");
 const subjectBtns = exam.querySelectorAll(".exam__subject");
+const prevBtn = exam.querySelector("#prevBtn");
+
 
 /* ================= ДАННЫЕ ================= */
 
@@ -68,17 +70,57 @@ const subjects = {
     },
 
     reading: {
-        title: "Грамотность",
+        title: "Грамматика казахского языка",
         questions: [
             {
-                question: "Что является синонимом слова «быстро»?",
-                answers: ["Медленно", "Скоро", "Тихо"],
+                question: "Какой вариант означает «Я студент»?",
+                answers: ["Мен студентпін", "Мен студент", "Мен студентсың"],
+                correct: 0
+            },
+            {
+                question: "Как правильно сказать «Ты ученик»?",
+                answers: ["Сен оқушымын", "Сен оқушысың", "Сен оқушы"],
                 correct: 1
             },
             {
-                question: "Какое слово лишнее?",
-                answers: ["Книга", "Тетрадь", "Бежать"],
+                question: "Какой вопрос означает «Кто ты?»?",
+                answers: ["Сен кімсің?", "Сен қайдасың?", "Сен не істейсің?"],
+                correct: 0
+            },
+            {
+                question: "Как правильно сказать «Он дома»?",
+                answers: ["Ол үйде", "Ол үй", "Ол үймін"],
+                correct: 0
+            },
+            {
+                question: "Какой вариант означает «Мы идем»?",
+                answers: ["Біз барамын", "Біз барасың", "Біз барамыз"],
                 correct: 2
+            },
+            {
+                question: "Как правильно сказать «Меня зовут Айбек»?",
+                answers: ["Мен Айбекпін", "Менің атым Айбек", "Мен Айбек"],
+                correct: 1
+            },
+            {
+                question: "Какой вариант означает «Где школа?»?",
+                answers: ["Мектеп қайда?", "Мектеп қандай?", "Мектеп кім?"],
+                correct: 0
+            },
+            {
+                question: "Как правильно сказать «Я не знаю»?",
+                answers: ["Мен білмеймін", "Мен білесің", "Мен білемін"],
+                correct: 0
+            },
+            {
+                question: "Какой вариант означает «Сегодня холодно»?",
+                answers: ["Бүгін суық", "Бүгін суықпын", "Бүгін суықсың"],
+                correct: 0
+            },
+            {
+                question: "Как правильно задать вопрос «Как дела?»?",
+                answers: ["Қалайсың?", "Қайдасың?", "Кімсің?"],
+                correct: 0
             }
         ]
     },
@@ -142,6 +184,9 @@ function renderQuestion() {
     answersEl.innerHTML = "";
     nextBtn.disabled = true;
 
+    // ⬅⬅⬅ ВОТ ЭТО ДОБАВИТЬ
+    prevBtn.disabled = state.index === 0;
+
     q.answers.forEach((text, i) => {
         const label = document.createElement("label");
         label.className = "exam__answer";
@@ -167,21 +212,42 @@ function renderQuestion() {
         answersEl.appendChild(label);
     });
 }
+prevBtn.addEventListener("click", () => {
+    if (examFinished) return;
+    const state = examState[currentSubject];
+    if (state.index > 0) {
+        state.index--;
+        renderQuestion();
+    }
+});
+
+
+prevBtn.addEventListener("click", () => {
+    const state = examState[currentSubject];
+
+    if (state.index > 0) {
+        state.index--;
+        renderQuestion();
+    }
+});
+
 
 
 const EXAM_DURATION = 40 * 60; // 40 минут в секундах
 const TIMER_KEY = "examEndTime";
 
 function initTimer() {
-    let endTime = localStorage.getItem(TIMER_KEY);
+    let endTime = Number(localStorage.getItem(TIMER_KEY));
 
-    if (!endTime) {
+
+    if (!endTime || endTime <= Date.now()) {
         endTime = Date.now() + EXAM_DURATION * 1000;
         localStorage.setItem(TIMER_KEY, endTime);
     }
 
-    return Number(endTime);
+    return endTime;
 }
+
 let examEndTime = initTimer();
 
 const timerInterval = setInterval(() => {
@@ -260,12 +326,38 @@ renderQuestion();
 
 
 const finishBtn = document.querySelector(".exam__finish");
-if (finishBtn) {
-    finishBtn.addEventListener("click", finishExam);
+const finishModal = document.getElementById("finishModal");
+const cancelFinish = document.getElementById("cancelFinish");
+const confirmFinish = document.getElementById("confirmFinish");
+
+let examFinished = false;
+
+function openFinishModal() {
+    finishModal.classList.add("modal--open");
+}
+
+function closeFinishModal() {
+    finishModal.classList.remove("modal--open");
 }
 
 
+
+// Отмена
+cancelFinish.addEventListener("click", closeFinishModal);
+
+// Подтверждение
+confirmFinish.addEventListener("click", () => {
+    closeFinishModal();
+    finishExam();
+});
+
+
+
+
 function finishExam() {
+    if (examFinished) return;
+    examFinished = true;
+
     clearInterval(timerInterval);
     localStorage.removeItem(TIMER_KEY);
 
@@ -278,9 +370,22 @@ function finishExam() {
 
     const level = getLevel(totalScore);
 
-    showResult(totalScore, level);
+
+    const resultData = {
+        score: totalScore,
+        level: level,
+        date: new Date().toISOString()
+    };
+
+    localStorage.setItem("kazakhTestResult", JSON.stringify(resultData));
+
+    // (по желанию) сервер
     saveResult(totalScore, level);
+
+    showResult(totalScore, level);
 }
+
+
 
 
 
@@ -353,6 +458,24 @@ function goToNextSubject() {
     }
 }
 
+function requestFinish() {
+    if (examFinished) return;
+    openFinishModal();
+}
 
+history.pushState(null, "", location.href);
+finishBtn.addEventListener("click", requestFinish);
+
+window.addEventListener("popstate", () => {
+    requestFinish();
+    history.pushState(null, "", location.href);
+});
+
+window.addEventListener("beforeunload", (e) => {
+    if (!examFinished) {
+        e.preventDefault();
+        e.returnValue = ""; // стандартное предупреждение браузера
+    }
+});
 
 
