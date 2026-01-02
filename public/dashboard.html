@@ -9,7 +9,8 @@
 
 <header class="header" id="header">
     <div class="header__container">
-        <a href="/html/index.html"><div class="logo">AnaTil</div></a>
+        <div class="logo" id="logoBtn">AnaTil</div>
+
 
         <nav class="nav">
             <a href="#promo" data-key="about">О нас</a>
@@ -333,16 +334,34 @@
 
 
 
+<script src="authFetch.js"></script>
 <script src="../header.js"></script>
 <script src="../i18n.js"></script>
 <script src="scroll.js"></script>
 <script src="modal_startexam.js"></script>
+<script src="dashboard.js"></script>
 
 <script>
     document.getElementById("logout").onclick = async () => {
         await fetch("/logout");
         location.href = "/";
     };
+    document.getElementById("logoBtn").addEventListener("click", async () => {
+        try {
+            const res = await fetch("/api/me", {
+                credentials: "include"
+            });
+
+            if (res.status === 401) {
+                window.location.href = "/index.html";
+            } else {
+                window.location.href = "/dashboard.html";
+            }
+        } catch {
+            window.location.href = "/index.html";
+        }
+    });
+
 </script>
 
 

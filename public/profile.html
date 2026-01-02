@@ -127,7 +127,6 @@
         }
 
         .profile-sidebar__back-btn {
-            margin-top: auto;
             width: 100%;
             padding: 10px;
             background: rgba(255, 255, 255, 0.15);
@@ -137,19 +136,70 @@
             cursor: pointer;
             font-size: 14px;
             transition: background 0.2s;
+            margin-bottom: 20px;
         }
+
+
+        /* убираем прижатие вниз */
+        .profile-sidebar__back-btn--top {
+            margin-top: 0;
+        }
+
+
 
         .profile-sidebar__back-btn:hover {
             background: rgba(255, 255, 255, 0.25);
+        }
+
+
+
+        #testActions button {
+            margin-right: 10px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #1e88e5;
+            color: #fff;
+        }
+
+        #testActions button:hover {
+            opacity: 0.9;
+        }
+
+        #historyBlock {
+            background: #f7f9fc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .profile-section {
+            margin-bottom: 48px;
+        }
+
+        .profile-section--level {
+            padding-top: 32px;
+            border-top: 1px solid #eee;
         }
 
     </style>
 </head>
 <body>
 
+<header class="course-header">
+    <h1>Казахский язык — базовый уровень</h1>
+    <p>
+        Базовый курс для начинающих. Алфавит, простые слова,
+        базовая грамматика и разговорные фразы.
+    </p>
+</header>
+
 <div class="profile-app">
     <aside class="profile-sidebar">
 
+        <button class="profile-sidebar__back-btn" id="backBtn">
+            На главную
+        </button>
         <!-- AVATAR -->
         <div class="profile-sidebar__avatar-wrapper">
             <img
@@ -180,67 +230,88 @@
 
         </nav>
 
-        <button class="profile-sidebar__back-btn" id="backBtn">
-            ← Назад
-        </button>
+
 
 
     </aside>
 
     <main class="profile-content">
-        <h2 class="profile-content__title">Личная информация</h2>
 
-        <form class="profile-form" id="profileForm">
-            <div class="profile-form__grid">
+        <!-- ===== ЛИЧНАЯ ИНФОРМАЦИЯ ===== -->
+        <section class="profile-section">
+            <h2 class="profile-content__title">Личная информация</h2>
 
-                <div>
-                    <label class="profile-form__field-label">Имя</label>
-                    <input class="profile-form__input" name="first_name" />
+            <form class="profile-form" id="profileForm">
+                <div class="profile-form__grid">
+
+                    <div>
+                        <label class="profile-form__field-label">Имя</label>
+                        <input class="profile-form__input" name="first_name" />
+                    </div>
+
+                    <div>
+                        <label class="profile-form__field-label">Личный телефон</label>
+                        <input class="profile-form__input" name="phone" />
+                    </div>
+
+                    <div>
+                        <label class="profile-form__field-label">Фамилия</label>
+                        <input class="profile-form__input" name="last_name" />
+                    </div>
+
+                    <div>
+                        <label class="profile-form__field-label">Страна, город</label>
+                        <select class="profile-form__select" name="location">
+                            <option value="">Выберите</option>
+                            <option>Казахстан, Астана</option>
+                            <option>Казахстан, Алматы</option>
+                            <option>Казахстан, Шымкент</option>
+                            <option>Россия, Москва</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="profile-form__field-label">Имя пользователя</label>
+                        <input class="profile-form__input" name="username" />
+                    </div>
+
+                    <div>
+                        <label class="profile-form__field-label">Email</label>
+                        <input class="profile-form__input" name="email" />
+                    </div>
+
                 </div>
 
-                <div>
-                    <label class="profile-form__field-label">Личный телефон</label>
-                    <input class="profile-form__input" name="phone" />
+                <div class="profile-form__actions">
+                    <button class="profile-form__submit" type="submit">
+                        Сохранить изменения
+                    </button>
                 </div>
+            </form>
+        </section>
 
-                <div>
-                    <label class="profile-form__field-label">Фамилия</label>
-                    <input class="profile-form__input" name="last_name" />
-                </div>
 
-                <div>
-                    <label class="profile-form__field-label">Страна, город</label>
-                    <select class="profile-form__select" name="location">
-                        <option value="">Выберите</option>
-                        <option>Казахстан, Астана</option>
-                        <option>Казахстан, Алматы</option>
-                        <option>Казахстан, Шымкент</option>
-                        <option>Россия, Москва</option>
-                    </select>
-                </div>
+        <!-- ===== ВАШ УРОВЕНЬ ===== -->
+        <section class="profile-section profile-section--level">
+            <h2 class="profile-content__title">Ваш уровень</h2>
 
-                <div>
-                    <label class="profile-form__field-label">Имя пользователя</label>
-                    <input class="profile-form__input" name="username" />
-                </div>
+            <div id="testResultBlock"></div>
 
-                <div>
-                    <label class="profile-form__field-label">Email</label>
-                    <input class="profile-form__input" name="email" />
-                </div>
-
+            <div id="testActions" style="margin-top:20px; display:none;">
+                <button id="retryTestBtn">Сдать тест заново</button>
+                <button id="historyBtn">История попыток</button>
             </div>
 
-            <div class="profile-form__actions">
-                <button class="profile-form__submit" type="submit">
-                    Сохранить изменения
-                </button>
-            </div>
-        </form>
+            <div id="historyBlock" style="margin-top:20px; display:none;"></div>
+        </section>
+
     </main>
+
 </div>
 
+<script src="authFetch.js"></script>
 <script src="profile.js"></script>
 <script src="usersidebar.js"></script>
+<script src="mycourses.js"></script>
 </body>
 </html>

@@ -1,0 +1,94 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f5f6f8;
+    padding: 40px;
+}
+
+.course {
+    max-width: 900px;
+    margin: auto;
+}
+
+.course-header {
+    margin-bottom: 40px;
+}
+
+.course-header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.course-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* MODULE */
+.module {
+    margin-bottom: 30px;
+}
+
+.module-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.module-header h2 {
+    font-size: 20px;
+}
+
+.status {
+    font-size: 14px;
+    color: #4caf50;
+}
+
+.status.locked {
+    color: #999;
+}
+
+/* LESSONS */
+.lessons {
+    display: none;
+}
+
+.lessons.active {
+    display: block;
+}
+
+.lesson {
+    background: #fff;
+    border-radius: 14px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.lesson p {
+    font-size: 14px;
+    color: #4caf50;
+}
+
+.lesson.completed {
+    border-left: 6px solid #4caf50;
+}
+
+.lesson.locked {
+    opacity: 0.5;
+}
+
+.progress {
+    font-size: 14px;
+    color: #888;
+}

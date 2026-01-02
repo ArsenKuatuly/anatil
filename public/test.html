@@ -34,6 +34,16 @@
 
     <div class="exam__card">
 
+
+
+        <!-- Общая аудиозапись для всего раздела -->
+        <div class="exam__audio exam__audio--global" id="globalAudioBlock">
+            <p class="exam__audio-title">Аудио для всего задания</p>
+            <audio controls id="globalAudio">
+                <source src="audio/textexam.mp3" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+        </div>
         <div class="exam__info">
             <span class="exam__counter">
                 Вопрос: <b id="current">1</b>/10
@@ -42,6 +52,10 @@
                 Тип: один правильный ответ
             </span>
         </div>
+
+
+
+
 
         <div class="exam__question" id="question"></div>
 
@@ -84,6 +98,9 @@
     </div>
 </div>
 
-<script src="test.js"></script>
+<script src="authFetch.js"></script>
+<script type="module" src="test.js"></script>
+<script src="slushanie.js"></script>
+
 </body>
 </html>

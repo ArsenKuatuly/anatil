@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Казахский язык — Элементарный уровень</title>
+    <link rel="stylesheet" href="../courselvl.css">
+</head>
+<body>
+
+<div class="course">
+
+    <!-- HEADER -->
+    <header class="course-header">
+        <h1>Казахский язык — базовый уровень</h1>
+        <p>
+            Базовый курс для начинающих. Алфавит, простые слова,
+            базовая грамматика и разговорные фразы.
+        </p>
+    </header>
+
+    <!-- MODULE 1 -->
+    <section class="module">
+        <div class="module-header" data-module="1">
+            <span class="lock">🔓</span>
+            <div>
+                <h2>Модуль #1</h2>
+                <span class="status">Модуль доступен</span>
+            </div>
+        </div>
+
+        <div class="lessons active">
+            <div class="lesson completed">
+                <div>
+                    <strong>#1. Алфавит и звуки</strong>
+                    <p>Урок пройден</p>
+                </div>
+                <span class="progress">1/1</span>
+            </div>
+
+            <div class="lesson completed">
+                <div>
+                    <strong>#2. Приветствие и знакомство</strong>
+                    <p>Урок пройден</p>
+                </div>
+                <span class="progress">1/1</span>
+            </div>
+
+            <div class="lesson">
+                <div>
+                    <strong>#3. Простые слова и числа</strong>
+                    <p>Урок не пройден</p>
+                </div>
+                <span class="progress">0/1</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODULE 2 -->
+    <section class="module">
+        <div class="module-header" data-module="2">
+            <span class="lock">🔒</span>
+            <div>
+                <h2>Модуль #2</h2>
+                <span class="status locked">Модуль заблокирован</span>
+            </div>
+        </div>
+
+        <div class="lessons">
+            <div class="lesson locked">
+                <strong>#4. Местоимения</strong>
+            </div>
+            <div class="lesson locked">
+                <strong>#5. Простые предложения</strong>
+            </div>
+        </div>
+    </section>
+    <button onclick="completeLesson(LESSON_ID)">
+        Завершить урок
+    </button>
+
+
+</div>
+
+<script src="../courselvl.js"></script>
+</body>
+</html>

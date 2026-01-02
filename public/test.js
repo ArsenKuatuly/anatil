@@ -1,3 +1,5 @@
+
+
 const exam = document.querySelector(".exam");
 
 const questionEl = exam.querySelector("#question");
@@ -129,17 +131,58 @@ const subjects = {
         title: "Слушание",
         questions: [
             {
-                question: "Какое слово ты услышал: «Сәлем»?",
-                answers: ["Прощание", "Приветствие", "Извинение"],
+                question: "Мәтіндегі кейіпкер қай жерде тұрады?",
+                answers: ["Пәтерде", "Жер үйде", "Жатақханада"],
                 correct: 1
             },
             {
-                question: "Что означает «Рахмет»?",
-                answers: ["Здравствуйте", "Спасибо", "Пока"],
+                question: "Үйі қандай?",
+                answers: ["Үлкен", "Екі қабатты", "Кішкентай"],
+                correct: 2
+            },
+            {
+                question: "Үйінде неше жатын бөлме бар?",
+                answers: ["Бір", "Екі", "Үш"],
+                correct: 1
+            },
+            {
+                question: "Ата-анасы қай жерде ұйықтайды?",
+                answers: ["Қонақ бөлмеде", "Асүйде", "Бір жатын бөлмеде"],
+                correct: 2
+            },
+            {
+                question: "Автор мен әпкесі қай жерде ұйықтайды?",
+                answers: ["Басқа жатын бөлмеде", "Қонақ бөлмеде", "Асүйде"],
+                correct: 0
+            },
+            {
+                question: "Отбасы күнделікті қай жерде тамақтанады?",
+                answers: ["Қонақ бөлмеде", "Асүйде", "Аулада"],
+                correct: 1
+            },
+            {
+                question: "Отбасы кешке не істейді?",
+                answers: ["Кітап оқиды", "Теледидар көреді", "Серуендейді"],
+                correct: 1
+            },
+            {
+                question: "Жертөледе не бар?",
+                answers: ["Қойма", "Әкемнің шеберханасы", "Жатын бөлме"],
+                correct: 1
+            },
+            {
+                question: "Әкесі не істейді?",
+                answers: ["Көлік жөндейді", "Ағаштан жиһаз жасайды", "Тамақ пісіреді"],
+                correct: 1
+            },
+            {
+                question: "Аулада не бар?",
+                answers: ["Тек гараж", "Бассейн мен ағаш", "Дүкен"],
                 correct: 1
             }
         ]
     }
+
 };
 
 /* ================= СОСТОЯНИЕ ================= */
@@ -214,6 +257,7 @@ function renderQuestion() {
 }
 prevBtn.addEventListener("click", () => {
     if (examFinished) return;
+
     const state = examState[currentSubject];
     if (state.index > 0) {
         state.index--;
@@ -221,15 +265,6 @@ prevBtn.addEventListener("click", () => {
     }
 });
 
-
-prevBtn.addEventListener("click", () => {
-    const state = examState[currentSubject];
-
-    if (state.index > 0) {
-        state.index--;
-        renderQuestion();
-    }
-});
 
 
 
@@ -379,6 +414,7 @@ function finishExam() {
 
     localStorage.setItem("kazakhTestResult", JSON.stringify(resultData));
 
+
     // (по желанию) сервер
     saveResult(totalScore, level);
 
@@ -390,42 +426,100 @@ function finishExam() {
 
 
 function getLevel(score) {
-    if (score <= 6) return "Элементарный";
-    if (score <= 12) return "Базовый";
-    if (score <= 18) return "Средний";
-    if (score <= 24) return "Выше среднего";
-    return "Высокий";
+    if (score <= 6)  return "elementary";
+    if (score <= 12) return "basic";
+    if (score <= 18) return "intermediate";
+    if (score <= 24) return "upper";
+    return "advanced";
 }
+
+const levelTitles = {
+    elementary: "Элементарный",
+    basic: "Базовый",
+    intermediate: "Средний",
+    upper: "Выше среднего",
+    advanced: "Высокий"
+};
+
+
 function showResult(score, level) {
+    const percent = Math.round((score / 30) * 100);
+    const levelText = levelTitles[level] || level;
+
     exam.innerHTML = `
-        <div class="exam__card">
-            <h2>Результаты тестирования</h2>
+        <div class="result">
+            <div class="result__card">
+                <h2 class="result__title">Результаты тестирования</h2>
 
-            <p><b>Общий балл:</b> ${score} / 30</p>
-            <p><b>Уровень:</b> ${level}</p>
+                <div class="result__score">
+                    <div class="result__circle">
+                        <span>${percent}%</span>
+                    </div>
+                    <p class="result__level">${levelText}</p>
+                </div>
 
-            <hr>
+                <div class="result__details">
+                    <div>
+                        <span>Перевод слов</span>
+                        <b>${examState.math.score} / 10</b>
+                    </div>
+                    <div>
+                        <span>Грамматика</span>
+                        <b>${examState.reading.score} / 10</b>
+                    </div>
+                    <div>
+                        <span>Слушание</span>
+                        <b>${examState.listening.score} / 10</b>
+                    </div>
+                </div>
 
-            <p>Математическая грамотность: ${examState.math.score} / 10</p>
-            <p>Грамотность чтения: ${examState.reading.score} / 10</p>
-            <p>Слушание: ${examState.listening.score} / 10</p>
+                <div class="result__actions">
+                    <button id="goHome" class="btn btn--secondary">На главную</button>
+                    <button id="goProfile" class="btn btn--secondary">В профиль</button>
+                    <button id="goCourses" class="btn btn--primary">
+                        Перейти к курсам
+                    </button>
+                </div>
+            </div>
         </div>
     `;
+
+    document.getElementById("goHome").onclick = () => {
+        window.location.href = "/index.html";
+    };
+
+    document.getElementById("goProfile").onclick = () => {
+        window.location.href = "/profile.html";
+        window.location.href = "/profile.html";
+    };
+
+    document.getElementById("goCourses").onclick = () => {
+        window.location.href = "/levelcourses.html";
+    };
 }
 
-function saveResult(score, level) {
-    fetch("/api/save-result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            totalScore: score,
-            level,
-            math: examState.math.score,
-            reading: examState.reading.score,
-            listening: examState.listening.score
-        })
-    });
+
+
+async function saveResult(score, level) {
+    try {
+        await authFetch("/api/save-result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                totalScore: score,
+                level,
+                math: examState.math.score,
+                reading: examState.reading.score,
+                listening: examState.listening.score
+            })
+        });
+    } catch (e) {
+        // если пользователь не авторизован —
+        // authFetch сам отправит на /login.html
+        console.error("Ошибка сохранения результата", e);
+    }
 }
+
 
 function calculateScores() {
     Object.keys(examState).forEach(subject => {
@@ -477,5 +571,7 @@ window.addEventListener("beforeunload", (e) => {
         e.returnValue = ""; // стандартное предупреждение браузера
     }
 });
+
+
 
 
