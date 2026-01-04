@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Урок</title>
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="lesson-page">
+
+    <header class="lesson-header">
+        <button id="backBtn">← Назад к курсу</button>
+        <h1 id="lessonTitle">Загрузка...</h1>
+    </header>
+
+    <main class="lesson-content" id="lessonContent">
+        Загрузка урока...
+    </main>
+
+    <footer class="lesson-footer">
+        <button id="completeLessonBtn" class="btn btn--primary">
+            Завершить урок
+        </button>
+    </footer>
+
+</div>
+<div id="completionModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modalTitle"></h2>
+        <p id="modalText"></p>
+
+        <div class="modal-actions">
+            <button id="goCourseBtn">К курсу</button>
+            <button id="goNextBtn" class="primary">Следующий урок</button>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/authFetch.js"></script>
+
+<script src="lesson.js"></script>
+</body>
+</html>

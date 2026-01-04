@@ -10,5 +10,21 @@ async function initCourseButton() {
         window.location.href = `/courses/${data.course.slug}`;
     });
 }
+goHome.addEventListener("click", async () => {
+    try {
+        const res = await fetch("/api/me", {
+            credentials: "include"
+        });
+
+        if (res.status === 401) {
+            window.location.href = "/index.html";
+        } else {
+            window.location.href = "/dashboard.html";
+        }
+    } catch {
+        window.location.href = "/index.html";
+    }
+});
+
 
 initCourseButton();

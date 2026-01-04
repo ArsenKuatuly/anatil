@@ -1,67 +1,83 @@
-
-
-const moduleHeaders = document.querySelectorAll('.module-header');
-
-moduleHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-        const lessons = header.nextElementSibling;
-        lessons.classList.toggle('active');
-    });
-});
+document.addEventListener("DOMContentLoaded", loadCourse);
 
 async function loadCourse() {
-    const res = await authFetch("/api/course/elementary");
+    const res = await fetch("/api/course/basic", {
+        credentials: "include"
+    });
+
+    if (!res.ok) {
+        alert("Не удалось загрузить курс");
+        return;
+    }
+
     const data = await res.json();
+    renderModules(data.modules);
+}
 
-    if (!data.success) return;
+function renderModules(modules) {
+    const container = document.getElementById("modules");
+    container.innerHTML = "";
 
-    const container = document.querySelector(".course");
-
-    data.modules.forEach(module => {
+    modules.forEach((module, index) => {
         const section = document.createElement("section");
         section.className = "module";
 
+        const locked = module.locked;
+        const completed = module.completed;
+
         section.innerHTML = `
-            <div class="module-header">
-                <h2>${module.title}</h2>
-            </div>
-            <div class="lessons active"></div>
-        `;
-
-        const lessonsDiv = section.querySelector(".lessons");
-
-        module.lessons.forEach(lesson => {
-            const lessonDiv = document.createElement("div");
-            lessonDiv.className = "lesson " + (lesson.completed ? "completed" : "");
-
-            lessonDiv.innerHTML = `
+            <div class="module-header ${locked ? "locked" : ""}">
+                <span class="lock">${locked ? "🔒" : "🔓"}</span>
                 <div>
-                    <strong>${lesson.title}</strong>
-                    <p>${lesson.completed ? "Урок пройден" : "Не пройден"}</p>
+                    <h2>Модуль #${index + 1}: ${module.title}</h2>
+                    <span class="status ${locked ? "locked" : ""}">
+                        ${locked ? "Модуль заблокирован" : "Модуль доступен"}
+                    </span>
                 </div>
-                <button data-id="${lesson.id}">
-                    ${lesson.completed ? "✔" : "Пройти"}
-                </button>
-            `;
+            </div>
 
-            lessonDiv.querySelector("button").onclick = () =>
-                completeLesson(lesson.id);
-
-            lessonsDiv.appendChild(lessonDiv);
-        });
+            <div class="lessons ${locked ? "" : "active"}">
+                ${module.lessons.map(lesson => `
+                    <div class="lesson
+                        ${lesson.completed ? "completed" : ""}
+                        ${locked ? "locked" : ""}"
+                        data-lesson="${lesson.id}">
+                        <div>
+                            <strong>${lesson.title}</strong>
+                            <p>${lesson.completed ? "Урок пройден" : "Урок не пройден"}</p>
+                        </div>
+                        ${
+            lesson.completed
+                ? `<span class="progress">1/1</span>`
+                : `<button onclick="completeLesson(${lesson.id})">
+                                        Завершить
+                                   </button>`
+        }
+                    </div>
+                `).join("")}
+            </div>
+        `;
 
         container.appendChild(section);
     });
 }
-
 async function completeLesson(lessonId) {
-    await authFetch("/api/lesson/complete", {
+    const res = await fetch("/api/lesson/complete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
         body: JSON.stringify({ lessonId })
     });
 
-    location.reload();
-}
+    const data = await res.json();
 
-loadCourse();
+    if (!data.success) {
+        alert("Не удалось завершить урок");
+        return;
+    }
+
+    // перезагружаем курс — модуль может открыться
+    loadCourse();
+}

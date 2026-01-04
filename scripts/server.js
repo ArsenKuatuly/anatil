@@ -44,20 +44,27 @@ async function unlockNextModule(userId, currentModuleId) {
     const [[nextModule]] = await db.execute(`
         SELECT id
         FROM modules
-        WHERE position > (
+        WHERE course_id = (
+            SELECT course_id FROM modules WHERE id = ?
+        )
+          AND position > (
             SELECT position FROM modules WHERE id = ?
         )
         ORDER BY position
-        LIMIT 1
-    `, [currentModuleId]);
+            LIMIT 1
+    `, [currentModuleId, currentModuleId]);
 
     if (!nextModule) return;
 
     await db.execute(`
-        INSERT IGNORE INTO user_module_progress (user_id, module_id, completed)
+        INSERT INTO user_module_progress (user_id, module_id, completed)
         VALUES (?, ?, 0)
+            ON DUPLICATE KEY UPDATE
+                                 completed = IF(completed = 1, 1, 0)
     `, [userId, nextModule.id]);
 }
+
+
 
 /* ================= MIDDLEWARE ================= */
 app.use(express.json());
@@ -83,29 +90,97 @@ function auth(req, res, next) {
 }
 
 async function lessonAccess(req, res, next) {
-    const userId = req.session.userId;
-    const lessonId = req.body.lessonId || req.params.lessonId;
+    try {
+        const userId = req.session.userId;
+        const lessonId = req.params.id;
 
+        /* ================== 1️⃣ УРОК + МОДУЛЬ ================== */
+        const [[lesson]] = await db.execute(`
+            SELECT
+                l.id,
+                l.position        AS lesson_pos,
+                m.id              AS module_id,
+                m.position        AS module_pos,
+                m.course_id
+            FROM lessons l
+            JOIN modules m ON m.id = l.module_id
+            WHERE l.id = ?
+        `, [lessonId]);
 
-    const [[access]] = await db.execute(`
-        SELECT ump.completed
-        FROM lessons l
-        JOIN modules m ON m.id = l.module_id
-        LEFT JOIN user_module_progress ump
-            ON ump.module_id = m.id
-            AND ump.user_id = ?
-        WHERE l.id = ?
-    `, [userId, lessonId]);
+        if (!lesson) {
+            return res.status(404).json({
+                success: false,
+                message: "Урок не найден"
+            });
+        }
 
-    if (!access || access.completed === 0) {
+        /* ================== 2️⃣ ПЕРВЫЙ УРОК ПЕРВОГО МОДУЛЯ ================== */
+        if (lesson.module_pos === 1 && lesson.lesson_pos === 1) {
+            return next();
+        }
+
+        /* ================== 3️⃣ ПРЕДЫДУЩИЙ УРОК (внутри модуля) ================== */
+        if (lesson.lesson_pos > 1) {
+            const [[prevLesson]] = await db.execute(`
+                SELECT ulp.completed
+                FROM lessons l
+                LEFT JOIN user_lesson_progress ulp
+                       ON ulp.lesson_id = l.id
+                      AND ulp.user_id = ?
+                WHERE l.module_id = ?
+                  AND l.position = ?
+            `, [userId, lesson.module_id, lesson.lesson_pos - 1]);
+
+            if (prevLesson && Number(prevLesson.completed) === 1) {
+                return next();
+            }
+
+            return res.status(403).json({
+                success: false,
+                message: "Сначала завершите предыдущий урок"
+            });
+        }
+
+        /* ================== 4️⃣ ПЕРВЫЙ УРОК НЕ ПЕРВОГО МОДУЛЯ ================== */
+        const [[prevModule]] = await db.execute(`
+            SELECT ump.completed
+            FROM modules m
+            LEFT JOIN user_module_progress ump
+                   ON ump.module_id = m.id
+                  AND ump.user_id = ?
+            WHERE m.course_id = ?
+              AND m.position = ?
+        `, [userId, lesson.course_id, lesson.module_pos - 1]);
+
+        if (prevModule && Number(prevModule.completed) === 1) {
+            return next();
+        }
+
         return res.status(403).json({
             success: false,
-            message: "Модуль заблокирован"
+            message: "Сначала завершите предыдущий модуль"
+        });
+
+    } catch (err) {
+        console.error("❌ lessonAccess error:", err);
+        res.status(500).json({
+            success: false,
+            message: "Ошибка проверки доступа"
         });
     }
-
-    next(); // ← если всё ок, идём дальше
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -357,22 +432,6 @@ app.get("/logout", (req, res) => {
 
 /* ================= START ================= */
 
-goHome.addEventListener("click", async () => {
-    try {
-        const res = await fetch("/api/me", {
-            credentials: "include"
-        });
-
-        if (res.status === 401) {
-            window.location.href = "/index.html";
-        } else {
-            window.location.href = "/dashboard.html";
-        }
-    } catch {
-        window.location.href = "/index.html";
-    }
-});
-
 
 
 
@@ -480,6 +539,13 @@ app.get("/api/my-course", auth, async (req, res) => {
             });
         }
 
+        // ✅ гарантируем активный курс
+        await db.execute(`
+    INSERT INTO user_course_progress (user_id, course_id, completed)
+    VALUES (?, ?, 0)
+    ON DUPLICATE KEY UPDATE completed = 0
+`, [userId, course.id]);
+
         res.json({
             success: true,
             course
@@ -556,110 +622,175 @@ app.get("/api/test-history", auth, async (req, res) => {
 
 
 
-app.post(
-    "/api/lesson/complete",
-    auth,
-    lessonAccess,
-    async (req, res) => {
-
-    const { lessonId } = req.body;
+app.post("/api/lesson/complete", auth, async (req, res) => {
     const userId = req.session.userId;
+    const { lessonId } = req.body;
 
     try {
-        // 1. Отмечаем урок пройденным
+        /* ================== 1️⃣ ЗАВЕРШАЕМ УРОК ================== */
         await db.execute(`
             INSERT INTO user_lesson_progress (user_id, lesson_id, completed, completed_at)
             VALUES (?, ?, 1, NOW())
-            ON DUPLICATE KEY UPDATE
-                completed = 1,
-                completed_at = NOW()
+                ON DUPLICATE KEY UPDATE
+                                     completed = 1,
+                                     completed_at = NOW()
         `, [userId, lessonId]);
 
-        // 2. Узнаем модуль урока
+        /* ================== 2️⃣ МОДУЛЬ И КУРС УРОКА ================== */
         const [[lesson]] = await db.execute(`
-            SELECT module_id FROM lessons WHERE id = ?
+            SELECT
+                l.module_id,
+                m.course_id,
+                m.position   AS module_position,
+                c.position   AS course_position
+            FROM lessons l
+                     JOIN modules m ON m.id = l.module_id
+                     JOIN courses c ON c.id = m.course_id
+            WHERE l.id = ?
         `, [lessonId]);
 
-        // 3. Проверяем: все ли уроки модуля пройдены
-        const [[stats]] = await db.execute(`
-            SELECT
-                COUNT(l.id) AS total,
-                SUM(IF(ulp.completed = 1, 1, 0)) AS completed
-            FROM lessons l
-            LEFT JOIN user_lesson_progress ulp
-                ON ulp.lesson_id = l.id
-                AND ulp.user_id = ?
-            WHERE l.module_id = ?
-        `, [userId, lesson.module_id]);
+        const moduleId = lesson.module_id;
+        const courseId = lesson.course_id;
 
-        // 4. Если модуль завершён — сохраняем
-        if (stats.total === stats.completed) {
+        /* ================== 3️⃣ ПРОВЕРКА УРОКОВ В МОДУЛЕ ================== */
+        const [[unfinishedLessons]] = await db.execute(`
+            SELECT COUNT(*) AS cnt
+            FROM lessons l
+                     LEFT JOIN user_lesson_progress ulp
+                               ON ulp.lesson_id = l.id
+                                   AND ulp.user_id = ?
+            WHERE l.module_id = ?
+              AND (ulp.completed IS NULL OR ulp.completed = 0)
+        `, [userId, moduleId]);
+
+        let moduleCompleted = false;
+        let courseCompleted = false;
+        let nextCourse = null;
+
+        /* ================== 4️⃣ ЗАВЕРШЕНИЕ МОДУЛЯ ================== */
+        if (unfinishedLessons.cnt === 0) {
             await db.execute(`
                 INSERT INTO user_module_progress (user_id, module_id, completed, completed_at)
                 VALUES (?, ?, 1, NOW())
-                ON DUPLICATE KEY UPDATE
-                    completed = 1,
-                    completed_at = NOW()
-            `, [userId, lesson.module_id]);
+                    ON DUPLICATE KEY UPDATE
+                                         completed = 1,
+                                         completed_at = NOW()
+            `, [userId, moduleId]);
 
-            // 5. Открываем следующий модуль
-            await unlockNextModule(userId, lesson.module_id);
+            moduleCompleted = true;
+
+            /* ================== 5️⃣ ПРОВЕРКА МОДУЛЕЙ В КУРСЕ ================== */
+            const [[unfinishedModules]] = await db.execute(`
+                SELECT COUNT(*) AS cnt
+                FROM modules m
+                         LEFT JOIN user_module_progress ump
+                                   ON ump.module_id = m.id
+                                       AND ump.user_id = ?
+                WHERE m.course_id = ?
+                  AND (ump.completed IS NULL OR ump.completed = 0)
+            `, [userId, courseId]);
+
+            /* ================== 6️⃣ ЗАВЕРШЕНИЕ КУРСА ================== */
+            if (unfinishedModules.cnt === 0) {
+                await db.execute(`
+                    UPDATE user_course_progress
+                    SET completed = 1,
+                        completed_at = NOW()
+                    WHERE user_id = ?
+                      AND course_id = ?
+                `, [userId, courseId]);
+
+                courseCompleted = true;
+
+                /* ================== 7️⃣ СЛЕДУЮЩИЙ КУРС ================== */
+                const [[next]] = await db.execute(`
+                    SELECT id, slug, title
+                    FROM courses
+                    WHERE position = (
+                        SELECT position + 1
+                        FROM courses
+                        WHERE id = ?
+                    )
+                        LIMIT 1
+                `, [courseId]);
+
+                if (next) {
+                    nextCourse = next;
+
+                }
+            }
         }
 
-        res.json({ success: true });
+
+        /* ================== 8️⃣ ОТВЕТ ================== */
+        res.json({
+            success: true,
+            moduleCompleted,
+            courseCompleted,
+            nextCourse
+        });
 
     } catch (err) {
-        console.error(err);
+        console.error("❌ lesson complete error:", err);
         res.status(500).json({ success: false });
     }
 });
+
+
+
 
 app.get("/api/continue-lesson", auth, async (req, res) => {
     const userId = req.session.userId;
 
     try {
-        // 1️⃣ первый доступный модуль
-        const [[module]] = await db.execute(`
-            SELECT m.id
-            FROM modules m
-            LEFT JOIN user_module_progress ump
-                ON ump.module_id = m.id
-                AND ump.user_id = ?
-            WHERE ump.completed IS NULL OR ump.completed = 0
-            ORDER BY m.position
-            LIMIT 1
+        /* 1️⃣ активный курс */
+        const [[course]] = await db.execute(`
+            SELECT course_id
+            FROM user_course_progress
+            WHERE user_id = ?
+              AND completed = 0
+                LIMIT 1
         `, [userId]);
 
-        if (!module) {
-            return res.json({
-                success: false,
-                message: "Все модули пройдены"
-            });
+        if (!course) {
+            return res.json({ success: false, courseCompleted: true });
         }
 
-        // 2️⃣ первый НЕ пройденный урок в модуле
+        const courseId = course.course_id;
+
+        /* 2️⃣ следующий доступный урок */
         const [[lesson]] = await db.execute(`
             SELECT l.id
             FROM lessons l
-            LEFT JOIN user_lesson_progress ulp
-                ON ulp.lesson_id = l.id
-                AND ulp.user_id = ?
-            WHERE l.module_id = ?
+                     JOIN modules m ON m.id = l.module_id
+                     LEFT JOIN user_lesson_progress ulp
+                               ON ulp.lesson_id = l.id
+                                   AND ulp.user_id = ?
+            WHERE m.course_id = ?
               AND (ulp.completed IS NULL OR ulp.completed = 0)
-            ORDER BY l.position
-            LIMIT 1
-        `, [userId, module.id]);
+            ORDER BY m.position, l.position
+                LIMIT 1
+        `, [userId, courseId]);
 
-        if (!lesson) {
+        /* 3️⃣ если урок найден → идём в него */
+        if (lesson) {
             return res.json({
-                success: false,
-                message: "Нет доступных уроков"
+                success: true,
+                lessonId: lesson.id
             });
         }
 
+        /* 4️⃣ иначе — курс завершён */
+        await db.execute(`
+            UPDATE user_course_progress
+            SET completed = 1, completed_at = NOW()
+            WHERE user_id = ?
+              AND course_id = ?
+        `, [userId, courseId]);
+
         res.json({
             success: true,
-            lessonId: lesson.id
+            courseCompleted: true
         });
 
     } catch (err) {
@@ -669,28 +800,63 @@ app.get("/api/continue-lesson", auth, async (req, res) => {
 });
 
 
-app.get("/api/course/:level", auth, async (req, res) => {
+
+
+
+app.get("/api/course/:slug", auth, async (req, res) => {
     const userId = req.session.userId;
+    const { slug } = req.params;
 
     try {
+        /* 1️⃣ курс */
+        const [[course]] = await db.execute(`
+            SELECT id, title, slug
+            FROM courses
+            WHERE slug = ?
+        `, [slug]);
+
+        if (!course) {
+            return res.json({ success: false });
+        }
+
+        /* 2️⃣ модули курса */
         const [modules] = await db.execute(`
             SELECT
                 m.id,
                 m.title,
-                IF(ump.completed IS NULL, 0, ump.completed) AS completed
+                m.position,
+                IF(ump.completed = 1, 1, 0) AS completed,
+                IF(
+                        m.position = 1,
+                        0,
+                        EXISTS (
+                            SELECT 1
+                            FROM modules pm
+                                     LEFT JOIN user_module_progress ump2
+                                               ON ump2.module_id = pm.id
+                                                   AND ump2.user_id = ?
+                            WHERE pm.course_id = m.course_id
+                              AND pm.position = m.position - 1
+                              AND (ump2.completed IS NULL OR ump2.completed = 0)
+
+                        )
+                ) AS locked
             FROM modules m
                      LEFT JOIN user_module_progress ump
                                ON ump.module_id = m.id
                                    AND ump.user_id = ?
+            WHERE m.course_id = ?
             ORDER BY m.position
-        `, [userId]);
+        `, [userId, userId, course.id]);
 
-        // уроки
+
+        /* 3️⃣ уроки для каждого модуля */
         for (const module of modules) {
             const [lessons] = await db.execute(`
                 SELECT
                     l.id,
                     l.title,
+                    l.position,
                     IF(ulp.completed = 1, 1, 0) AS completed
                 FROM lessons l
                          LEFT JOIN user_lesson_progress ulp
@@ -700,19 +866,14 @@ app.get("/api/course/:level", auth, async (req, res) => {
                 ORDER BY l.position
             `, [userId, module.id]);
 
-            module.lessons = lessons;
+            module.lessons = lessons; // 🔥 ВАЖНО
         }
 
-        // 🔒 блокировка модулей
-        for (let i = 0; i < modules.length; i++) {
-            if (i === 0) {
-                modules[i].locked = false;
-            } else {
-                modules[i].locked = !modules[i - 1].completed;
-            }
-        }
-
-        res.json({ success: true, modules });
+        res.json({
+            success: true,
+            course,
+            modules
+        });
 
     } catch (err) {
         console.error(err);
@@ -723,6 +884,92 @@ app.get("/api/course/:level", auth, async (req, res) => {
 
 
 
+
+
+
+
+
+app.get("/api/lesson/:id", auth, lessonAccess, async (req, res) => {
+    const lessonId = req.params.id;
+
+    try {
+        const [[lesson]] = await db.execute(`
+            SELECT
+                l.title,
+                l.content,
+                c.slug AS courseSlug
+            FROM lessons l
+                     JOIN modules m ON m.id = l.module_id
+                     JOIN courses c ON c.id = m.course_id
+            WHERE l.id = ?
+        `, [lessonId]);
+
+        if (!lesson) {
+            return res.status(404).json({
+                success: false,
+                message: "Урок не найден"
+            });
+        }
+
+        res.json({
+            success: true,
+            lesson
+        });
+
+    } catch (err) {
+        console.error("GET /api/lesson/:id", err);
+        res.status(500).json({
+            success: false,
+            message: "Ошибка сервера"
+        });
+    }
+});
+
+
+
+app.get("/api/module/:id/lessons", auth, async (req, res) => {
+    const userId = req.session.userId;
+
+    const moduleId = req.params.id;
+
+    const [lessons] = await db.query(`
+        SELECT 
+            l.id,
+            l.title,
+            l.position,
+            ulp.completed
+        FROM lessons l
+        LEFT JOIN user_lesson_progress ulp
+            ON ulp.lesson_id = l.id
+            AND ulp.user_id = ?
+        WHERE l.module_id = ?
+        ORDER BY l.position
+    `, [userId, moduleId]);
+
+    res.json({ success: true, lessons });
+});
+
+app.get("/api/my-active-course", auth, async (req, res) => {
+    const userId = req.session.userId;
+
+    const [[course]] = await db.execute(`
+        SELECT c.slug
+        FROM user_course_progress ucp
+        JOIN courses c ON c.id = ucp.course_id
+        WHERE ucp.user_id = ?
+          AND ucp.completed = 0
+        LIMIT 1
+    `, [userId]);
+
+    if (!course) {
+        return res.json({ success: false });
+    }
+
+    res.json({
+        success: true,
+        slug: course.slug
+    });
+});
 
 
 

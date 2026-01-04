@@ -1,0 +1,147 @@
+/* ===== LESSON CONTENT ===== */
+
+#lessonContent {
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+#lessonContent h2 {
+    margin-top: 24px;
+    font-size: 22px;
+}
+
+#lessonContent h3 {
+    margin-top: 16px;
+    font-size: 18px;
+}
+
+#lessonContent ul {
+    margin-left: 20px;
+}
+
+.alphabet {
+    font-size: 18px;
+    line-height: 1.6;
+    letter-spacing: 2px;
+    background: #f7f7f7;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 12px 0;
+}
+.lessons {
+    display: none;
+    margin-top: 10px;
+}
+
+.lessons.active {
+    display: block;
+}
+
+.module-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.module-header.locked {
+    opacity: 0.6;
+}
+
+.lesson {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lesson.completed {
+    opacity: 0.6;
+}
+.lesson.locked {
+    opacity: 0.5;
+}
+
+.locked-text {
+    font-size: 12px;
+    color: #999;
+}
+
+.lesson button {
+    cursor: pointer;
+}
+
+.lesson.completed {
+    opacity: 0.6;
+}
+/* ===== КНОПКА ОТКРЫТЬ ===== */
+.btn-open {
+    padding: 6px 14px;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-open:hover {
+    background: #43a047;
+    transform: translateY(-1px);
+}
+
+.btn-open:active {
+    transform: translateY(0);
+}
+
+/* ===== УРОКИ ===== */
+.lesson {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lesson.locked {
+    opacity: 0.5;
+}
+
+.locked-text {
+    font-size: 12px;
+    color: #888;
+}
+
+.lesson.completed {
+    opacity: 0.6;
+}
+
+/* ===== МОДУЛИ ===== */
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.module-header.locked {
+    opacity: 0.6;
+}
+
+.module-status {
+    font-size: 13px;
+}
+
+.module-status.completed {
+    color: #4CAF50;
+}
+
+.module-status.locked {
+    color: #999;
+}
+.module-header:hover {
+    background: #f7f7f7;
+}
+
+.lesson:not(.locked):hover {
+    background: #f9f9f9;
+}

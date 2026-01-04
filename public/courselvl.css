@@ -57,12 +57,10 @@ body {
 
 /* LESSONS */
 .lessons {
-    display: none;
-}
-
-.lessons.active {
     display: block;
 }
+
+
 
 .lesson {
     background: #fff;
