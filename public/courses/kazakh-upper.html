@@ -1,14 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Казахский язык — Выше среднего</title>
-    <link rel="stylesheet" href="../courselvl.css">
+    <title>Казахский язык — выше средний уровень</title>
+    <link rel="stylesheet" href="/courselvl.css">
 </head>
 <body>
 
 <div class="course">
-
     <header class="course-header">
         <h1>Казахский язык — уровень выше среднего</h1>
         <p>
@@ -17,27 +17,13 @@
         </p>
     </header>
 
-    <section class="module">
-        <div class="module-header" data-module="1">
-            <span class="lock">🔓</span>
-            <div>
-                <h2>Модуль #1</h2>
-                <span class="status">Модуль доступен</span>
-            </div>
-        </div>
-
-        <div class="lessons active">
-            <div class="lesson">
-                <strong>#1. Причастия и деепричастия</strong>
-            </div>
-            <div class="lesson">
-                <strong>#2. Официально-деловой стиль</strong>
-            </div>
-        </div>
-    </section>
-
+    <!-- сюда JS подставит модули -->
+    <div id="modules"></div>
 </div>
 
-<script src="course.js" data-level="upper-intermediate"></script>
+<!-- 🔥 ВАЖНО: абсолютные пути -->
+<script src="/js/authFetch.js"></script>
+<script src="/js/coursemodul.js"></script>
+
 </body>
 </html>
