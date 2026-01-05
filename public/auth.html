@@ -15,7 +15,22 @@
         <input class="auth__input" type="text" id="login" />
 
         <label class="auth__label">Пароль</label>
-        <input class="auth__input" type="password" id="password" />
+
+        <div class="auth__password-wrapper">
+            <input
+                    class="auth__input auth__input--password js-password"
+                    type="password"
+                    name="password"
+            />
+
+            <img
+                    src="imgs/showpass.png"
+                    alt="Показать пароль"
+                    class="auth__toggle-password js-toggle-password"
+            />
+        </div>
+
+
 
         <button class="auth__button" id="loginBtn">Войти</button>
 
@@ -29,5 +44,6 @@
 </div>
 
 <script src="/scripts/auth.js" defer></script>
+<script src="/scripts/showpass.js"></script>
 </body>
 </html>

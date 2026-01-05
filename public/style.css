@@ -752,3 +752,25 @@ a{
     color: #fff;
 }
 
+.auth__password-wrapper {
+    position: relative;
+}
+
+.auth__input--password {
+    padding-right: 45px;
+}
+
+.auth__toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.auth__toggle-password:hover {
+    opacity: 1;
+}
