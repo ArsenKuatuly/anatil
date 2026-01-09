@@ -1,0 +1,194 @@
+/* =========================
+   ADMIN PANEL
+========================= */
+
+.admin {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fb;
+    font-family: "Inter", Arial, sans-serif;
+}
+
+/* ===== SIDEBAR ===== */
+.admin__sidebar {
+    width: 260px;
+    background: #0f172a; /* темно-синий */
+    color: #fff;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.admin__sidebar h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.admin__sidebar button {
+    background: transparent;
+    border: none;
+    color: #cbd5f5;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin__sidebar button:hover {
+    background: #1e293b;
+    color: #fff;
+}
+
+.admin__sidebar button.active {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Кнопка "На сайт" */
+.admin__sidebar button:last-child {
+    margin-top: auto;
+    background: #020617;
+    color: #94a3b8;
+}
+
+.admin__sidebar button:last-child:hover {
+    background: #1e293b;
+    color: #fff;
+}
+
+/* ===== CONTENT ===== */
+.admin__content {
+    flex: 1;
+    padding: 32px;
+    background: #f8fafc;
+    overflow-y: auto;
+}
+
+/* ===== CARDS ===== */
+.admin-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    margin-bottom: 24px;
+}
+
+.admin-card h3 {
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* ===== TABLE ===== */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 14px;
+}
+
+.admin-table th {
+    background: #f1f5f9;
+    font-weight: 600;
+}
+
+.admin-table tr:hover {
+    background: #f8fafc;
+}
+
+/* ===== BUTTONS ===== */
+.admin-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-btn--primary {
+    background: #2563eb;
+    color: #fff;
+}
+
+.admin-btn--danger {
+    background: #dc2626;
+    color: #fff;
+}
+
+.admin-btn--primary:hover {
+    background: #1d4ed8;
+}
+
+.admin-btn--danger:hover {
+    background: #b91c1c;
+}
+
+/* ===== FORMS ===== */
+.admin-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+}
+
+.admin-input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .admin {
+        flex-direction: column;
+    }
+
+    .admin__sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 8px;
+        overflow-x: auto;
+    }
+
+    .admin__sidebar h2 {
+        display: none;
+    }
+
+    .admin__sidebar button {
+        white-space: nowrap;
+    }
+}
+
+.lesson-editor {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.lesson-editor input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.lesson-editor textarea {
+    width: 100%;
+    min-height: 200px;
+    font-family: monospace;
+    padding: 10px;
+}

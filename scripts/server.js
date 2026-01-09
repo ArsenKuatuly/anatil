@@ -187,9 +187,118 @@ async function lessonAccess(req, res, next) {
     }
 }
 
+function isAdmin(req, res, next) {
+    if (!req.session?.userId) {
+        return res.redirect("/auth.html");
+    }
+
+    if (req.session.role !== "admin") {
+        return res.redirect("/dashboard"); // 👌 UX
+    }
+
+    next();
+}
 
 
 
+
+
+app.get("/admin", isAdmin, (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "../public/admin.html")
+    );
+});
+
+
+
+app.get("/api/admin/users", isAdmin, async (req, res) => {
+    const [users] = await db.execute(`
+        SELECT id, login, role, current_level, created_at
+        FROM users
+        ORDER BY created_at DESC
+    `);
+
+    res.json({ success: true, users });
+});
+
+
+app.patch("/api/admin/user/:id/role", isAdmin, async (req, res) => {
+    const { role } = req.body;
+    const userId = req.params.id;
+
+    if (!["admin", "user"].includes(role)) {
+        return res.status(400).json({ success: false });
+    }
+
+    await db.execute(
+        "UPDATE users SET role = ? WHERE id = ?",
+        [role, userId]
+    );
+
+    res.json({ success: true });
+});
+
+
+app.post("/api/admin/user/:id/reset", isAdmin, async (req, res) => {
+    const userId = req.params.id;
+
+    await resetAllProgress(db, userId);
+
+    res.json({ success: true });
+});
+
+app.get("/api/admin/courses", isAdmin, async (req, res) => {
+    const [courses] = await db.execute(`
+        SELECT id, title, slug, level
+        FROM courses
+        ORDER BY level
+    `);
+
+    res.json({ success: true, courses });
+});
+
+app.get("/api/admin/modules/:courseId", isAdmin, async (req, res) => {
+    const [rows] = await db.query(
+        "SELECT id, title FROM modules WHERE course_id = ? ORDER BY position",
+        [req.params.courseId]
+    );
+    res.json(rows);
+});
+
+app.get("/api/admin/lessons/:moduleId", isAdmin, async (req, res) => {
+    const [rows] = await db.query(
+        "SELECT id, title, content FROM lessons WHERE module_id = ? ORDER BY position",
+        [req.params.moduleId]
+    );
+    res.json(rows);
+});
+
+app.patch("/api/admin/lesson/:id", isAdmin, async (req, res) => {
+    const { title, content } = req.body;
+
+    await db.query(
+        "UPDATE lessons SET title = ?, content = ? WHERE id = ?",
+        [title, content, req.params.id]
+    );
+
+    res.json({ success: true });
+});
+
+
+app.get("/api/admin/stats", isAdmin, async (req, res) => {
+    const [[users]] = await db.execute(`SELECT COUNT(*) AS cnt FROM users`);
+    const [[admins]] = await db.execute(`SELECT COUNT(*) AS cnt FROM users WHERE role = 'admin'`);
+    const [[tests]] = await db.execute(`SELECT COUNT(*) AS cnt FROM test_results`);
+
+    res.json({
+        success: true,
+        stats: {
+            users: users.cnt,
+            admins: admins.cnt,
+            tests: tests.cnt
+        }
+    });
+});
 
 
 
@@ -265,6 +374,7 @@ app.post("/login", async (req, res) => {
 
         req.session.userId = user.id;
         req.session.login = user.login;
+        req.session.role = user.role;
 
         res.json({
             success: true,
@@ -390,6 +500,7 @@ app.get("/api/me", auth, async (req, res) => {
             user: {
                 id: req.session.userId,
                 login: req.session.login,
+                role: req.session.role,        // 🔥 ВАЖНО
                 avatar: rows[0]?.avatar || "/uploads/avatars/default.png"
             }
         });
@@ -398,6 +509,7 @@ app.get("/api/me", auth, async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
 
 
 
