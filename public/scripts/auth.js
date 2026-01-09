@@ -6,13 +6,10 @@ if (loginBtn) {
         const loginInput = document.getElementById("login");
         const passwordInput = document.querySelector(".js-password");
 
-        if (!loginInput || !passwordInput) {
-            console.error("Поля логина или пароля не найдены");
-            return;
-        }
+        if (!loginInput || !passwordInput) return;
 
-        const login = loginInput.value;
-        const password = passwordInput.value;
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
 
         message.textContent = "";
         message.className = "auth__message";
@@ -20,7 +17,10 @@ if (loginBtn) {
         try {
             const response = await fetch("/login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include", // 🔥 ОБЯЗАТЕЛЬНО
                 body: JSON.stringify({ login, password })
             });
 
@@ -34,12 +34,12 @@ if (loginBtn) {
             );
 
             if (result.success) {
-                setTimeout(() => {
-                    window.location.href = "/dashboard";
-                }, 500);
+                // 🔥 СРАЗУ В DASHBOARD
+                window.location.replace("/dashboard");
             }
-        } catch (err) {
-            message.textContent = "Ошибка соединения с сервером";
+
+        } catch (e) {
+            message.textContent = "Ошибка сервера";
             message.classList.add("auth__message--error");
         }
     });

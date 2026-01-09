@@ -182,6 +182,23 @@
             border-top: 1px solid #eee;
         }
 
+        .profile-sidebar__logout-btn {
+            margin-top: auto; /* прижимает кнопку вниз */
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .profile-sidebar__logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
     </style>
 </head>
 <body>
@@ -225,6 +242,9 @@
 
 
 
+        <button class="profile-sidebar__logout-btn" id="logoutBtn">
+            Выйти из аккаунта
+        </button>
 
     </aside>
 
@@ -303,5 +323,7 @@
 <script src="profile.js"></script>
 <script src="usersidebar.js"></script>
 <script src="mycourses.js"></script>
+<script src="logout.js"></script>
+
 </body>
 </html>

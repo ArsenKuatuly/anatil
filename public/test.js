@@ -405,19 +405,12 @@ async function finishExam() {
 
     const level = getLevel(totalScore);
 
-    // 🔥 ВАЖНО — открыть курсы
-    await unlockCoursesByLevel(level);
-
-    saveResult(totalScore, level);
+    // ✅ ТОЛЬКО ЭТО
+    await saveResult(totalScore, level);
     showResult(totalScore, level);
 }
-async function unlockCoursesByLevel(level) {
-    await authFetch("/api/level/unlock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level })
-    });
-}
+
+
 
 
 
@@ -544,11 +537,21 @@ function goToNextSubject() {
 
 function requestFinish() {
     if (examFinished) return;
+
+    if (!finishModal) {
+        finishExam();
+        return;
+    }
+
     openFinishModal();
 }
 
+if (finishBtn) {
+    finishBtn.addEventListener("click", requestFinish);
+}
+
 history.pushState(null, "", location.href);
-finishBtn.addEventListener("click", requestFinish);
+
 
 window.addEventListener("popstate", () => {
     requestFinish();

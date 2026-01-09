@@ -2,27 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Казахский язык — элементарный уровень</title>
+    <title>Курс</title>
     <link rel="stylesheet" href="/courselvl.css">
+    <link rel="stylesheet" href="/header.css">
 </head>
 <body>
+<header class="header" id="header">
+    <div class="header__container">
+        <div class="logo" id="logoBtn">AnaTil</div>
+
+
+        <nav class="nav">
+            <a href="#promo" data-key="about">О нас</a>
+            <a href="#reasons" data-key="benefits">Преимущества</a>
+            <a href="#courses" data-key="courses_nav">Курсы</a>
+            <a href="#" data-key="contacts">Контакты</a>
+        </nav>
+
+
+        <div class="header__actions">
+
+
+            <a href="/profile.html"><button class="btn" id="cta" data-key="check_level">Ваш профиль</button></a>
+        </div>
+    </div>
+</header>
 
 <div class="course">
-    <header class="course-header">
-        <h1>Казахский язык — элементарный уровень</h1>
-        <p>
-            Базовый курс для начинающих. Алфавит, простые слова,
-            базовая грамматика и разговорные фразы.
-        </p>
-    </header>
+    <div class="course-header">
+        <!-- 🔥 ВАЖНО -->
+        <h1 id="courseTitle">Загрузка курса...</h1>
+
+        <p id="courseDescription"></p>
+    </div>
+
 
     <!-- сюда JS подставит модули -->
     <div id="modules"></div>
 </div>
 
-<!-- 🔥 ВАЖНО: абсолютные пути -->
 <script src="/js/authFetch.js"></script>
-<script src="./course.js"></script>
-
+<script src="/course.js"></script>
+<script src="/js/coursemodul.js"></script>
 </body>
 </html>

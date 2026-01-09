@@ -12,7 +12,8 @@ body {
 
 .course {
     max-width: 900px;
-    margin: auto;
+    margin: 100px auto;
+
 }
 
 .course-header {

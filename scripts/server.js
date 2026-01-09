@@ -15,6 +15,14 @@ require("../models/user.model");
 
 const app = express();
 
+app.use(
+    session({
+        secret: "very-secret-key",
+        resave: false,
+        saveUninitialized: false
+    })
+);
+
 app.use(express.static("public"));
 
 
@@ -75,13 +83,17 @@ async function unlockNextModule(userId, currentModuleId) {
 app.use(express.json());
 
 
-app.use(
-    session({
-        secret: "very-secret-key",
-        resave: false,
-        saveUninitialized: false
-    })
-);
+
+
+app.get("/", (req, res) => {
+    if (req.session.userId) {
+        return res.redirect("/dashboard");
+    }
+
+    res.sendFile(
+        path.join(__dirname, "../public/index.html")
+    );
+});
 
 /* ================= AUTH MIDDLEWARE ================= */
 function auth(req, res, next) {
@@ -526,6 +538,8 @@ app.get("/api/my-course", auth, async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
+
 
 
 
