@@ -3,11 +3,22 @@
 <head>
     <meta charset="UTF-8" />
     <title>Авторизация</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
 <div class="auth">
+
+
+    <div class="auth__top">
+        <div class="logo">AnaTil</div>
+
+        <a href="/html/index.html" class="auth__back-btn">
+            ← Вернуться на главную
+        </a>
+    </div>
+
+
     <div class="auth__card">
         <h2 class="auth__title">Авторизация</h2>
 
@@ -15,35 +26,32 @@
         <input class="auth__input" type="text" id="login" />
 
         <label class="auth__label">Пароль</label>
-
         <div class="auth__password-wrapper">
             <input
                     class="auth__input auth__input--password js-password"
                     type="password"
                     name="password"
             />
-
             <img
-                    src="imgs/showpass.png"
-                    alt="Показать пароль"
+                    src="/imgs/showpass.png"
                     class="auth__toggle-password js-toggle-password"
+                    alt="Показать пароль"
             />
         </div>
-
-
 
         <button class="auth__button" id="loginBtn">Войти</button>
 
         <p class="auth__footer">
             Нет аккаунта?
-            <a href="register.html" class="auth__link">Создать</a>
+            <a href="/register.html" class="auth__link">Создать</a>
         </p>
 
         <p class="auth__message" id="message"></p>
     </div>
+
 </div>
 
-<script src="/scripts/auth.js" defer></script>
+<script src="/scripts/auth.js"></script>
 <script src="/scripts/showpass.js"></script>
 </body>
 </html>

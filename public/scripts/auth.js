@@ -3,8 +3,16 @@ const message = document.getElementById("message");
 
 if (loginBtn) {
     loginBtn.addEventListener("click", async () => {
-        const login = document.getElementById("login").value;
-        const password = document.getElementById("password").value;
+        const loginInput = document.getElementById("login");
+        const passwordInput = document.querySelector(".js-password");
+
+        if (!loginInput || !passwordInput) {
+            console.error("Поля логина или пароля не найдены");
+            return;
+        }
+
+        const login = loginInput.value;
+        const password = passwordInput.value;
 
         message.textContent = "";
         message.className = "auth__message";
@@ -25,7 +33,6 @@ if (loginBtn) {
                     : "auth__message--error"
             );
 
-            // ✅ редирект на защищённую страницу
             if (result.success) {
                 setTimeout(() => {
                     window.location.href = "/dashboard";

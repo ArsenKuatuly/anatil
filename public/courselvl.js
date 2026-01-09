@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", loadCourse);
 
 async function loadCourse() {
-    const res = await fetch("/api/course/basic", {
+    const slug = window.location.pathname.split("/").pop();
+
+    const res = await fetch(`/api/course/${slug}`, {
         credentials: "include"
     });
 
@@ -23,7 +25,6 @@ function renderModules(modules) {
         section.className = "module";
 
         const locked = module.locked;
-        const completed = module.completed;
 
         section.innerHTML = `
             <div class="module-header ${locked ? "locked" : ""}">
@@ -40,18 +41,20 @@ function renderModules(modules) {
                 ${module.lessons.map(lesson => `
                     <div class="lesson
                         ${lesson.completed ? "completed" : ""}
-                        ${locked ? "locked" : ""}"
-                        data-lesson="${lesson.id}">
+                        ${locked ? "locked" : ""}">
                         <div>
                             <strong>${lesson.title}</strong>
                             <p>${lesson.completed ? "Урок пройден" : "Урок не пройден"}</p>
                         </div>
+
                         ${
             lesson.completed
-                ? `<span class="progress">1/1</span>`
-                : `<button onclick="completeLesson(${lesson.id})">
-                                        Завершить
-                                   </button>`
+                ? `<span class="progress">✔</span>`
+                : locked
+                    ? `<span class="progress">🔒</span>`
+                    : `<button onclick="openLesson(${lesson.id})">
+                                            Открыть
+                                       </button>`
         }
                     </div>
                 `).join("")}
@@ -61,23 +64,8 @@ function renderModules(modules) {
         container.appendChild(section);
     });
 }
-async function completeLesson(lessonId) {
-    const res = await fetch("/api/lesson/complete", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({ lessonId })
-    });
 
-    const data = await res.json();
-
-    if (!data.success) {
-        alert("Не удалось завершить урок");
-        return;
-    }
-
-    // перезагружаем курс — модуль может открыться
-    loadCourse();
+/* ================== OPEN LESSON ================== */
+function openLesson(lessonId) {
+    window.location.href = `/lesson.html?id=${lessonId}`;
 }

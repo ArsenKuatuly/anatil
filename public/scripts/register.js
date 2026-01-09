@@ -3,19 +3,26 @@ const message = document.getElementById("message");
 
 if (registerBtn) {
     registerBtn.addEventListener("click", async () => {
-        const login = document.getElementById("login");
-        const password = document.getElementById("password");
-        const passwordRepeat = document.getElementById("passwordRepeat");
+        const loginInput = document.getElementById("login");
+        const passwordInputs = document.querySelectorAll(".js-password");
+
+        if (!loginInput || passwordInputs.length < 2) {
+            console.error("Поля регистрации не найдены");
+            return;
+        }
+
+        const password = passwordInputs[0];
+        const passwordRepeat = passwordInputs[1];
 
         message.textContent = "";
         message.className = "auth__message";
 
-        [login, password, passwordRepeat].forEach(input =>
+        [loginInput, password, passwordRepeat].forEach(input =>
             input.classList.remove("auth__input--error")
         );
 
-        if (!login.value || !password.value || !passwordRepeat.value) {
-            showError("Заполните все поля", [login, password, passwordRepeat]);
+        if (!loginInput.value || !password.value || !passwordRepeat.value) {
+            showError("Заполните все поля", [loginInput, password, passwordRepeat]);
             return;
         }
 
@@ -24,21 +31,35 @@ if (registerBtn) {
             return;
         }
 
-        const response = await fetch("/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                login: login.value,
-                password: password.value
-            })
-        });
+        try {
+            const response = await fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    login: loginInput.value,
+                    password: password.value
+                })
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        message.textContent = result.message;
-        message.classList.add(
-            result.success ? "auth__message--success" : "auth__message--error"
-        );
+            message.textContent = result.message;
+            message.classList.add(
+                result.success
+                    ? "auth__message--success"
+                    : "auth__message--error"
+            );
+
+            if (result.success) {
+                setTimeout(() => {
+                    window.location.href = "/auth.html";
+                }, 700);
+            }
+
+        } catch (err) {
+            message.textContent = "Ошибка соединения с сервером";
+            message.classList.add("auth__message--error");
+        }
     });
 }
 

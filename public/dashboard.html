@@ -21,11 +21,7 @@
 
 
         <div class="header__actions">
-            <div class="lang-switch">
-                <button data-lang="kz" class="lang">KZ</button>
-                <button data-lang="ru" class="lang active">RU</button>
-                <button data-lang="en" class="lang">EN</button>
-            </div>
+
 
             <a href="profile.html"><button class="btn" id="cta" data-key="check_level">Ваш профиль</button></a>
         </div>
@@ -113,8 +109,61 @@
             </div>
 
         </div>
+        <div class="course-progress">
+
+            <div class="course-progress__header">
+                <div class="course-progress__circle">
+                    <span id="lessonPercent">0%</span>
+                </div>
+
+                <div class="course-progress__info">
+                    <h3 id="courseTitle">Ваш текущий курс</h3>
+                    <p id="courseDesc">Продолжайте обучение</p>
+                </div>
+            </div>
+
+            <div class="course-progress__lessons">
+
+                <div class="lesson-item lesson-item--done">
+                    <div class="lesson-status"></div>
+                    <div class="lesson-content">
+                        <div class="lesson-title" id="lastLesson">
+                            —
+                        </div>
+                        <div class="lesson-sub">
+                            Урок пройден
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lesson-item lesson-item--next">
+                    <div class="lesson-status"></div>
+                    <div class="lesson-content">
+                        <div class="lesson-title" id="nextLesson">
+                            —
+                        </div>
+                        <div class="lesson-sub">
+                            Урок не пройден
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <a href="#" id="goToCourseBtn" class="course-progress__link">
+                Перейти к курсу →
+            </a>
+
+        </div>
+
+
     </div>
+
+
 </section>
+
+
+
 
 <div class="modal" id="confirmModal">
     <div class="modal__content">
@@ -335,33 +384,10 @@
 
 
 <script src="js/authFetch.js"></script>
-<script src="/../i18n.js"></script>
 <script src="scroll.js"></script>
 <script src="modal_startexam.js"></script>
 <script src="dashboard.js"></script>
-
-<script>
-    document.getElementById("logout").onclick = async () => {
-        await fetch("/logout");
-        location.href = "/";
-    };
-    document.getElementById("logoBtn").addEventListener("click", async () => {
-        try {
-            const res = await fetch("/api/me", {
-                credentials: "include"
-            });
-
-            if (res.status === 401) {
-                window.location.href = "/index.html";
-            } else {
-                window.location.href = "/dashboard.html";
-            }
-        } catch {
-            window.location.href = "/index.html";
-        }
-    });
-
-</script>
+<script src="./js/lastlesson.js"></script>
 
 
 </body>

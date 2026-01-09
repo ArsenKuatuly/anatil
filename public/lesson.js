@@ -3,7 +3,6 @@ const params = new URLSearchParams(window.location.search);
 const lessonId = params.get("id");
 let courseSlug = null;
 
-
 if (!lessonId) {
     alert("Урок не найден");
     window.location.href = "/dashboard.html";
@@ -38,7 +37,6 @@ async function loadLesson() {
         lessonContent.innerHTML = data.lesson.content;
         courseSlug = data.lesson.courseSlug;
 
-
     } catch (err) {
         console.error(err);
         alert("Ошибка загрузки урока");
@@ -50,7 +48,8 @@ loadLesson();
 /* ================== COMPLETE LESSON ================== */
 completeBtn.addEventListener("click", async () => {
     try {
-        /* ===== 1️⃣ ЗАВЕРШАЕМ УРОК ===== */
+        completeBtn.disabled = true;
+
         const res = await authFetch("/api/lesson/complete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -61,6 +60,7 @@ completeBtn.addEventListener("click", async () => {
 
         if (!data.success) {
             alert("Ошибка завершения урока");
+            completeBtn.disabled = false;
             return;
         }
 
@@ -72,7 +72,6 @@ completeBtn.addEventListener("click", async () => {
                 modalText.textContent = `Следующий курс: «${data.nextCourse.title}»`;
                 goNextBtn.style.display = "block";
                 goNextBtn.textContent = "Перейти к следующему курсу";
-
                 goNextBtn.onclick = () => {
                     window.location.href = `/courses/${data.nextCourse.slug}`;
                 };
@@ -81,15 +80,10 @@ completeBtn.addEventListener("click", async () => {
                 goNextBtn.style.display = "none";
             }
 
-            goCourseBtn.textContent = "На главную";
+            goCourseBtn.textContent = "К списку курсов";
             goCourseBtn.onclick = () => {
-                if (courseSlug) {
-                    window.location.href = `/courses/${courseSlug}`;
-                } else {
-                    window.location.href = "/dashboard.html";
-                }
+                window.location.href = "/dashboard.html";
             };
-
 
             modal.classList.remove("hidden");
             return;
@@ -104,11 +98,11 @@ completeBtn.addEventListener("click", async () => {
             ? "Открыт следующий модуль"
             : "Перейти к следующему уроку?";
 
-        /* ===== 2️⃣ СЛЕДУЮЩИЙ УРОК ===== */
+        /* ================== СЛЕДУЮЩИЙ УРОК ================== */
         const nextRes = await authFetch("/api/continue-lesson");
         const nextData = await nextRes.json();
 
-        if (nextData.success) {
+        if (nextData.success && nextData.lessonId) {
             goNextBtn.style.display = "block";
             goNextBtn.textContent = "Следующий урок";
             goNextBtn.onclick = () => {
@@ -120,7 +114,7 @@ completeBtn.addEventListener("click", async () => {
 
         goCourseBtn.textContent = "К курсу";
         goCourseBtn.onclick = () => {
-            window.location.href = "/dashboard.html";
+            window.location.href = `/courses/${courseSlug}`;
         };
 
         modal.classList.remove("hidden");
@@ -128,15 +122,13 @@ completeBtn.addEventListener("click", async () => {
     } catch (err) {
         console.error(err);
         alert("Ошибка завершения урока");
+        completeBtn.disabled = false;
     }
 });
 
 /* ================== BACK ================== */
 backBtn.addEventListener("click", () => {
-    if (courseSlug) {
-        window.location.href = `/courses/${courseSlug}`;
-    } else {
-        window.location.href = "/dashboard.html";
-    }
+    window.location.href = courseSlug
+        ? `/courses/${courseSlug}`
+        : "/dashboard.html";
 });
-

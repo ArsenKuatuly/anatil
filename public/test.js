@@ -389,7 +389,7 @@ confirmFinish.addEventListener("click", () => {
 
 
 
-function finishExam() {
+async function finishExam() {
     if (examFinished) return;
     examFinished = true;
 
@@ -405,20 +405,18 @@ function finishExam() {
 
     const level = getLevel(totalScore);
 
+    // 🔥 ВАЖНО — открыть курсы
+    await unlockCoursesByLevel(level);
 
-    const resultData = {
-        score: totalScore,
-        level: level,
-        date: new Date().toISOString()
-    };
-
-    localStorage.setItem("kazakhTestResult", JSON.stringify(resultData));
-
-
-    // (по желанию) сервер
     saveResult(totalScore, level);
-
     showResult(totalScore, level);
+}
+async function unlockCoursesByLevel(level) {
+    await authFetch("/api/level/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level })
+    });
 }
 
 
@@ -490,8 +488,8 @@ function showResult(score, level) {
 
     document.getElementById("goProfile").onclick = () => {
         window.location.href = "/profile.html";
-        window.location.href = "/profile.html";
     };
+
 
     document.getElementById("goCourses").onclick = () => {
         window.location.href = "/levelcourses.html";
@@ -533,24 +531,16 @@ function calculateScores() {
 }
 
 function goToNextSubject() {
-    if (currentSubjectIndex < subjectOrder.length - 1) {
-        currentSubjectIndex++;
+    currentSubjectIndex++;
+
+    if (currentSubjectIndex < subjectOrder.length) {
         currentSubject = subjectOrder[currentSubjectIndex];
-
-        // подсветка кнопки предмета
-        subjectBtns.forEach(b =>
-            b.classList.toggle(
-                "exam__subject--active",
-                b.dataset.subject === currentSubject
-            )
-        );
-
         renderQuestion();
     } else {
-        // если это был последний предмет
         finishExam();
     }
 }
+
 
 function requestFinish() {
     if (examFinished) return;

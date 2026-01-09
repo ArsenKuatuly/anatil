@@ -1,11 +1,14 @@
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-
         const targetId = this.getAttribute('href');
-        const target = document.querySelector(targetId);
 
+        // ✅ если это не якорь — даём браузеру работать
+        if (!targetId || !targetId.startsWith("#")) return;
+
+        const target = document.querySelector(targetId);
         if (!target) return;
+
+        e.preventDefault();
 
         target.scrollIntoView({
             behavior: 'smooth',

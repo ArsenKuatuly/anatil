@@ -4,6 +4,11 @@ const session = require("express-session");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const { LEVELS } = require("../config/levels");
+const { resetAllProgress } = require("../utils/resetProgress");
+
+
+
 
 const db = require("../db");
 require("../models/user.model");
@@ -382,40 +387,7 @@ app.get("/api/me", auth, async (req, res) => {
     }
 });
 
-/* ================= SAVE TEST RESULT ================= */
-app.post("/api/save-result", auth, async (req, res) => {
-    const {
-        totalScore,
-        level,
-        reading,
-        listening,
-        math
-    } = req.body;
 
-    try {
-        await db.execute(
-            `
-            INSERT INTO test_results
-            (user_id, total_score, level, reading_score, listening_score, math_score)
-            VALUES (?, ?, ?, ?, ?, ?)
-            `,
-            [
-                req.session.userId,
-                totalScore,
-                level,
-                reading,
-                listening,
-                math
-            ]
-        );
-
-        res.json({ success: true });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false });
-    }
-});
 
 
 /* ================= PROTECTED PAGE ================= */
@@ -508,29 +480,27 @@ app.get("/api/my-course", auth, async (req, res) => {
     const userId = req.session.userId;
 
     try {
-        // 1. последний результат теста
-        const [[test]] = await db.execute(`
-            SELECT level
-            FROM test_results
-            WHERE user_id = ?
-            ORDER BY created_at DESC
-            LIMIT 1
+        // 1️⃣ уровень пользователя
+        const [[user]] = await db.execute(`
+            SELECT current_level
+            FROM users
+            WHERE id = ?
         `, [userId]);
 
-        if (!test) {
+        if (!user || !user.current_level) {
             return res.json({
                 success: false,
-                message: "Тест не пройден"
+                message: "Уровень пользователя не найден"
             });
         }
 
-        // 2. курс по уровню
+        // 2️⃣ курс по уровню
         const [[course]] = await db.execute(`
             SELECT id, title, slug, level
             FROM courses
             WHERE level = ?
-            LIMIT 1
-        `, [test.level]);
+                LIMIT 1
+        `, [user.current_level]);
 
         if (!course) {
             return res.json({
@@ -539,12 +509,12 @@ app.get("/api/my-course", auth, async (req, res) => {
             });
         }
 
-        // ✅ гарантируем активный курс
+        // 3️⃣ гарантируем активный курс
         await db.execute(`
-    INSERT INTO user_course_progress (user_id, course_id, completed)
-    VALUES (?, ?, 0)
-    ON DUPLICATE KEY UPDATE completed = 0
-`, [userId, course.id]);
+            INSERT INTO user_course_progress (user_id, course_id, completed)
+            VALUES (?, ?, 0)
+                ON DUPLICATE KEY UPDATE completed = 0
+        `, [userId, course.id]);
 
         res.json({
             success: true,
@@ -558,30 +528,36 @@ app.get("/api/my-course", auth, async (req, res) => {
 });
 
 
+
 async function courseAccess(req, res, next) {
     const userId = req.session.userId;
     const courseSlug = req.params.slug;
 
-    const [[test]] = await db.execute(`
-        SELECT level
-        FROM test_results
-        WHERE user_id = ?
-        ORDER BY created_at DESC
-        LIMIT 1
+    // 1️⃣ уровень пользователя
+    const [[user]] = await db.execute(`
+        SELECT current_level
+        FROM users
+        WHERE id = ?
     `, [userId]);
 
+    // 2️⃣ уровень курса
     const [[course]] = await db.execute(`
         SELECT level
         FROM courses
         WHERE slug = ?
     `, [courseSlug]);
 
-    if (!test || !course || test.level !== course.level) {
+    if (!user || !course) {
         return res.status(403).send("Доступ запрещён");
+    }
+
+    if (user.current_level !== course.level) {
+        return res.status(403).send("Курс недоступен по уровню");
     }
 
     next();
 }
+
 
 app.get("/courses/:slug", auth, courseAccess, (req, res) => {
     res.sendFile(
@@ -636,21 +612,19 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
                                      completed_at = NOW()
         `, [userId, lessonId]);
 
-        /* ================== 2️⃣ МОДУЛЬ И КУРС УРОКА ================== */
+        /* ================== 2️⃣ ПОЛУЧАЕМ МОДУЛЬ И КУРС ================== */
         const [[lesson]] = await db.execute(`
-            SELECT
-                l.module_id,
-                m.course_id,
-                m.position   AS module_position,
-                c.position   AS course_position
+            SELECT l.module_id, m.course_id
             FROM lessons l
                      JOIN modules m ON m.id = l.module_id
-                     JOIN courses c ON c.id = m.course_id
             WHERE l.id = ?
         `, [lessonId]);
 
-        const moduleId = lesson.module_id;
-        const courseId = lesson.course_id;
+        if (!lesson) {
+            return res.status(404).json({ success: false });
+        }
+
+        const { module_id: moduleId, course_id: courseId } = lesson;
 
         /* ================== 3️⃣ ПРОВЕРКА УРОКОВ В МОДУЛЕ ================== */
         const [[unfinishedLessons]] = await db.execute(`
@@ -663,71 +637,67 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
               AND (ulp.completed IS NULL OR ulp.completed = 0)
         `, [userId, moduleId]);
 
-        let moduleCompleted = false;
-        let courseCompleted = false;
-        let nextCourse = null;
-
-        /* ================== 4️⃣ ЗАВЕРШЕНИЕ МОДУЛЯ ================== */
-        if (unfinishedLessons.cnt === 0) {
-            await db.execute(`
-                INSERT INTO user_module_progress (user_id, module_id, completed, completed_at)
-                VALUES (?, ?, 1, NOW())
-                    ON DUPLICATE KEY UPDATE
-                                         completed = 1,
-                                         completed_at = NOW()
-            `, [userId, moduleId]);
-
-            moduleCompleted = true;
-
-            /* ================== 5️⃣ ПРОВЕРКА МОДУЛЕЙ В КУРСЕ ================== */
-            const [[unfinishedModules]] = await db.execute(`
-                SELECT COUNT(*) AS cnt
-                FROM modules m
-                         LEFT JOIN user_module_progress ump
-                                   ON ump.module_id = m.id
-                                       AND ump.user_id = ?
-                WHERE m.course_id = ?
-                  AND (ump.completed IS NULL OR ump.completed = 0)
-            `, [userId, courseId]);
-
-            /* ================== 6️⃣ ЗАВЕРШЕНИЕ КУРСА ================== */
-            if (unfinishedModules.cnt === 0) {
-                await db.execute(`
-                    UPDATE user_course_progress
-                    SET completed = 1,
-                        completed_at = NOW()
-                    WHERE user_id = ?
-                      AND course_id = ?
-                `, [userId, courseId]);
-
-                courseCompleted = true;
-
-                /* ================== 7️⃣ СЛЕДУЮЩИЙ КУРС ================== */
-                const [[next]] = await db.execute(`
-                    SELECT id, slug, title
-                    FROM courses
-                    WHERE position = (
-                        SELECT position + 1
-                        FROM courses
-                        WHERE id = ?
-                    )
-                        LIMIT 1
-                `, [courseId]);
-
-                if (next) {
-                    nextCourse = next;
-
-                }
-            }
+        if (unfinishedLessons.cnt > 0) {
+            return res.json({ success: true });
         }
 
+        /* ================== 4️⃣ ЗАВЕРШАЕМ МОДУЛЬ ================== */
+        await db.execute(`
+            INSERT INTO user_module_progress (user_id, module_id, completed, completed_at)
+            VALUES (?, ?, 1, NOW())
+                ON DUPLICATE KEY UPDATE
+                                     completed = 1,
+                                     completed_at = NOW()
+        `, [userId, moduleId]);
+
+        /* ================== 5️⃣ ПРОВЕРКА МОДУЛЕЙ В КУРСЕ ================== */
+        const [[unfinishedModules]] = await db.execute(`
+            SELECT COUNT(*) AS cnt
+            FROM modules m
+                     LEFT JOIN user_module_progress ump
+                               ON ump.module_id = m.id
+                                   AND ump.user_id = ?
+            WHERE m.course_id = ?
+              AND (ump.completed IS NULL OR ump.completed = 0)
+        `, [userId, courseId]);
+
+        if (unfinishedModules.cnt > 0) {
+            return res.json({ success: true });
+        }
+
+        /* ================== 6️⃣ ЗАВЕРШАЕМ КУРС ================== */
+        await db.execute(`
+            UPDATE user_course_progress
+            SET completed = 1,
+                completed_at = NOW()
+            WHERE user_id = ?
+              AND course_id = ?
+        `, [userId, courseId]);
+
+        /* ================== 7️⃣ ОБНОВЛЯЕМ УРОВЕНЬ ================== */
+        const [[course]] = await db.execute(`
+            SELECT level
+            FROM courses
+            WHERE id = ?
+        `, [courseId]);
+
+        if (course) {
+            const currentIndex = LEVELS.indexOf(course.level);
+            const nextLevel = LEVELS[currentIndex + 1];
+
+            if (nextLevel) {
+                await db.execute(`
+                    UPDATE users
+                    SET current_level = ?
+                    WHERE id = ?
+                `, [nextLevel, userId]);
+            }
+        }
 
         /* ================== 8️⃣ ОТВЕТ ================== */
         res.json({
             success: true,
-            moduleCompleted,
-            courseCompleted,
-            nextCourse
+            courseCompleted: true
         });
 
     } catch (err) {
@@ -735,6 +705,86 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
+app.get("/api/lessons/progress/current", auth, async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        /* 1️⃣ уровень пользователя */
+        const [[user]] = await db.execute(`
+            SELECT current_level
+            FROM users
+            WHERE id = ?
+        `, [userId]);
+
+        if (!user?.current_level) {
+            return res.json({ success: false });
+        }
+
+        /* 2️⃣ текущий курс по уровню */
+        const [[course]] = await db.execute(`
+            SELECT id, slug, title, level
+            FROM courses
+            WHERE level = ?
+                LIMIT 1
+        `, [user.current_level]);
+
+        if (!course) {
+            return res.json({ success: false });
+        }
+
+        /* 3️⃣ уроки курса */
+        const [lessons] = await db.execute(`
+            SELECT
+                l.id,
+                l.title,
+                IF(ulp.completed = 1, 1, 0) AS completed
+            FROM lessons l
+                     JOIN modules m ON m.id = l.module_id
+                     LEFT JOIN user_lesson_progress ulp
+                               ON ulp.lesson_id = l.id
+                                   AND ulp.user_id = ?
+            WHERE m.course_id = ?
+            ORDER BY m.position, l.position
+        `, [userId, course.id]);
+
+        if (!lessons.length) {
+            return res.json({
+                success: true,
+                course,
+                percent: 0,
+                lastLesson: null,
+                nextLesson: null
+            });
+        }
+
+        const completedLessons = lessons.filter(l => l.completed);
+        const percent = Math.round(
+            (completedLessons.length / lessons.length) * 100
+        );
+
+        res.json({
+            success: true,
+            course,
+            percent,
+            lastLesson: completedLessons.at(-1) || null,
+            nextLesson: lessons.find(l => !l.completed) || null
+        });
+
+    } catch (err) {
+        console.error("❌ current progress error:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+
+
+
+
+
+
+
+
 
 
 
@@ -970,6 +1020,60 @@ app.get("/api/my-active-course", auth, async (req, res) => {
         slug: course.slug
     });
 });
+
+
+
+
+
+app.post("/api/save-result", auth, async (req, res) => {
+    const userId = req.session.userId;
+    const { totalScore, level, reading, listening, math } = req.body;
+
+    try {
+        // 🔥 1️⃣ ПОЛНЫЙ СБРОС
+        await resetAllProgress(db, userId);
+
+        // 🔥 2️⃣ ОБНОВЛЕНИЕ УРОВНЯ
+        await db.execute(
+            `UPDATE users SET current_level = ? WHERE id = ?`,
+            [level, userId]
+        );
+
+        // 🔥 3️⃣ СОХРАНЕНИЕ РЕЗУЛЬТАТА
+        await db.execute(`
+            INSERT INTO test_results
+            (user_id, total_score, level, reading_score, listening_score, math_score)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [userId, totalScore, level, reading, listening, math]);
+
+        res.json({ success: true });
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false });
+    }
+});
+async function resetCourseProgress(db, userId, courseId) {
+    await db.execute(`
+        DELETE ulp
+        FROM user_lesson_progress ulp
+        JOIN lessons l ON l.id = ulp.lesson_id
+        JOIN modules m ON m.id = l.module_id
+        WHERE ulp.user_id = ? AND m.course_id = ?
+    `, [userId, courseId]);
+
+    await db.execute(`
+        DELETE ump
+        FROM user_module_progress ump
+        JOIN modules m ON m.id = ump.module_id
+        WHERE ump.user_id = ? AND m.course_id = ?
+    `, [userId, courseId]);
+
+    await db.execute(`
+        DELETE FROM user_course_progress
+        WHERE user_id = ? AND course_id = ?
+    `, [userId, courseId]);
+}
 
 
 
