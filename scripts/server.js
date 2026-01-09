@@ -561,9 +561,10 @@ async function courseAccess(req, res, next) {
 
 app.get("/courses/:slug", auth, courseAccess, (req, res) => {
     res.sendFile(
-        path.join(__dirname, "../public/courses", `${req.params.slug}.html`)
+        path.join(__dirname, "../public/course.html")
     );
 });
+
 
 
 

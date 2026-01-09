@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             data.nextLesson ? data.nextLesson.title : "Все уроки пройдены";
 
         document.getElementById("goToCourseBtn").href =
-            `/course.html?slug=${data.course.slug}`;
+            `/courses/${data.course.slug}`;
+
 
     } catch (err) {
         console.error("Ошибка загрузки прогресса", err);
