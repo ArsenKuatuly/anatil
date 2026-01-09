@@ -98,6 +98,46 @@
     </div>
 </div>
 
+<!-- RESULT MODAL -->
+<div class="modal" id="resultModal">
+    <div class="modal__overlay"></div>
+
+    <div class="modal__content result__card">
+        <h2 class="result__title">Результаты тестирования</h2>
+
+        <div class="result__score">
+            <div class="result__circle">
+                <span id="resultPercent">0%</span>
+            </div>
+            <p class="result__level" id="resultLevel"></p>
+        </div>
+
+        <div class="result__details">
+            <div>
+                <span>Перевод слов</span>
+                <b id="mathScore"></b>
+            </div>
+            <div>
+                <span>Грамматика</span>
+                <b id="readingScore"></b>
+            </div>
+            <div>
+                <span>Слушание</span>
+                <b id="listeningScore"></b>
+            </div>
+        </div>
+
+        <div class="result__actions">
+            <button id="goHome" class="btn btn--secondary">На главную</button>
+            <button id="goProfile" class="btn btn--secondary">В профиль</button>
+            <button id="goCourses" class="btn btn--primary">
+                Перейти к курсам
+            </button>
+        </div>
+    </div>
+</div>
+
+
 <script src="js/authFetch.js"></script>
 <script type="module" src="test.js"></script>
 <script src="slushanie.js"></script>

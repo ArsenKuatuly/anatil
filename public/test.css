@@ -302,3 +302,88 @@
     background: #eef2f7;
     color: #333;
 }
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.modal--open {
+    display: block;
+}
+
+.modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal__content {
+    position: relative;
+    max-width: 520px;
+    margin: 5vh auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    z-index: 1;
+    animation: scaleIn 0.25s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* RESULT UI */
+
+.result__title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.result__score {
+    text-align: center;
+}
+
+.result__circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 8px solid #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0 auto 10px;
+}
+
+.result__level {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.result__details {
+    margin: 24px 0;
+}
+
+.result__details div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.result__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}

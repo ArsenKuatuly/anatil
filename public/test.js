@@ -433,47 +433,39 @@ const levelTitles = {
 };
 
 
+const resultModal = document.getElementById("resultModal");
+
 function showResult(score, level) {
     const percent = Math.round((score / 30) * 100);
     const levelText = levelTitles[level] || level;
 
-    exam.innerHTML = `
-        <div class="result">
-            <div class="result__card">
-                <h2 class="result__title">Результаты тестирования</h2>
+    document.getElementById("resultPercent").textContent = `${percent}%`;
+    document.getElementById("resultLevel").textContent = levelText;
 
-                <div class="result__score">
-                    <div class="result__circle">
-                        <span>${percent}%</span>
-                    </div>
-                    <p class="result__level">${levelText}</p>
-                </div>
+    document.getElementById("mathScore").textContent =
+        `${examState.math.score} / 10`;
 
-                <div class="result__details">
-                    <div>
-                        <span>Перевод слов</span>
-                        <b>${examState.math.score} / 10</b>
-                    </div>
-                    <div>
-                        <span>Грамматика</span>
-                        <b>${examState.reading.score} / 10</b>
-                    </div>
-                    <div>
-                        <span>Слушание</span>
-                        <b>${examState.listening.score} / 10</b>
-                    </div>
-                </div>
+    document.getElementById("readingScore").textContent =
+        `${examState.reading.score} / 10`;
 
-                <div class="result__actions">
-                    <button id="goHome" class="btn btn--secondary">На главную</button>
-                    <button id="goProfile" class="btn btn--secondary">В профиль</button>
-                    <button id="goCourses" class="btn btn--primary">
-                        Перейти к курсам
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    document.getElementById("listeningScore").textContent =
+        `${examState.listening.score} / 10`;
+
+    resultModal.classList.add("modal--open");
+
+    document.getElementById("goHome").onclick = () => {
+        window.location.href = "/index.html";
+    };
+
+    document.getElementById("goProfile").onclick = () => {
+        window.location.href = "/profile.html";
+    };
+
+    document.getElementById("goCourses").onclick = () => {
+        window.location.href = "/levelcourses.html";
+    };
+}
+
 
     document.getElementById("goHome").onclick = () => {
         window.location.href = "/index.html";
@@ -487,7 +479,7 @@ function showResult(score, level) {
     document.getElementById("goCourses").onclick = () => {
         window.location.href = "/levelcourses.html";
     };
-}
+
 
 
 
