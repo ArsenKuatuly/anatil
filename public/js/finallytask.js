@@ -116,7 +116,7 @@ submitBtn.addEventListener("click", async () => {
         const res = await authFetch(`/api/task/${taskId}/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ score: 100 })
+            body: JSON.stringify({ score: 100 }) // или { answers } если хочешь реальные ответы
         });
 
         const data = await res.json();
@@ -127,6 +127,12 @@ submitBtn.addEventListener("click", async () => {
             resultMessage.textContent = "Поздравляем! Вы прошли задание 🎉";
             resultMessage.style.color = "green";
             submitBtn.disabled = true;
+
+            // 🔹 Перенаправление через 2 секунды
+            setTimeout(() => {
+                window.location.href = "/mycourses.html";
+            }, 2000);
+
         } else {
             resultMessage.textContent = "Задание не пройдено. Попробуйте снова.";
             resultMessage.style.color = "red";
@@ -139,6 +145,7 @@ submitBtn.addEventListener("click", async () => {
         resultMessage.style.color = "red";
     }
 });
+
 
 
 backBtn.addEventListener("click", () => {

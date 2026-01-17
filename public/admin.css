@@ -151,27 +151,7 @@
     border-color: #2563eb;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-    .admin {
-        flex-direction: column;
-    }
 
-    .admin__sidebar {
-        width: 100%;
-        flex-direction: row;
-        gap: 8px;
-        overflow-x: auto;
-    }
-
-    .admin__sidebar h2 {
-        display: none;
-    }
-
-    .admin__sidebar button {
-        white-space: nowrap;
-    }
-}
 
 .lesson-editor {
     border: 1px solid #ddd;

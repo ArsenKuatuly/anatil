@@ -45,6 +45,7 @@ async function loadLesson() {
 
 loadLesson();
 
+/* ================== COMPLETE LESSON ================== */
 completeBtn.addEventListener("click", async () => {
     try {
         completeBtn.disabled = true;
@@ -63,70 +64,79 @@ completeBtn.addEventListener("click", async () => {
             return;
         }
 
+        modal.classList.remove("hidden");
+
         /* ================== КУРС ЗАВЕРШЁН ================== */
         if (data.courseCompleted) {
-
             modalTitle.textContent = "Поздравляем! 🎉";
-
-            // Текст для всех курсов пройдено
             modalText.textContent = "Вы прошли все уроки. Чтобы пройти на следующий курс, пройдите итоговое задание.";
 
             // Кнопка "К курсу"
             goCourseBtn.style.display = "inline-block";
+            goCourseBtn.disabled = false;
             goCourseBtn.textContent = "К курсу";
-            goCourseBtn.onclick = () => {
+            goCourseBtn.addEventListener("click", () => {
                 window.location.href = `/courses/${courseSlug}`;
-            };
+            });
 
             // Кнопка "Итоговое задание"
             goNextBtn.style.display = "inline-block";
+            goNextBtn.disabled = true; // пока не получен taskId
             goNextBtn.textContent = "Итоговое задание";
 
-            // Берём id финального задания через API
-            const taskRes = await authFetch(`/api/course/${data.courseId}/task`);
-            const taskData = await taskRes.json();
+            try {
+                const courseId = data.courseId;
+                if (courseId) {
+                    const taskRes = await authFetch(`/api/course/${courseId}/task`);
+                    const taskData = await taskRes.json();
 
-            if (taskData.success && taskData.task) {
-                goNextBtn.onclick = () => {
-                    window.location.href = `/task.html?taskId=${taskData.task.id}`;
-                };
-            } else {
+                    console.log("taskData:", taskData);
+
+                    if (taskData.success && taskData.task && taskData.task.id) {
+                        const taskId = taskData.task.id;
+
+                        goNextBtn.disabled = false;
+
+                        // Снимаем старые обработчики
+                        const newBtn = goNextBtn.cloneNode(true);
+                        goNextBtn.replaceWith(newBtn);
+
+                        // Навешиваем новый обработчик
+                        newBtn.addEventListener("click", () => {
+                            window.location.href = `/finallytask.html?taskId=${taskId}`;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Ошибка получения итогового задания", err);
                 goNextBtn.disabled = true;
             }
+            goNextBtn.disabled = true;
+            }
 
-            modal.classList.remove("hidden");
-            return;
-        }
-
-        /* ================== УРОК / МОДУЛЬ ================== */
-        modalTitle.textContent = data.moduleCompleted
-            ? "Модуль завершён 🏆"
-            : "Урок завершён 🎉";
-
-        modalText.textContent = data.moduleCompleted
-            ? "Открыт следующий модуль"
-            : "Перейти к следующему уроку?";
+            /* ================== УРОК / МОДУЛЬ ================== */
+        modalTitle.textContent = data.moduleCompleted ? "Модуль завершён 🏆" : "Урок завершён 🎉";
+        modalText.textContent = data.moduleCompleted ? "Открыт следующий модуль" : "Перейти к следующему уроку?";
 
         /* ================== СЛЕДУЮЩИЙ УРОК ================== */
         const nextRes = await authFetch("/api/continue-lesson");
         const nextData = await nextRes.json();
 
         if (nextData.success && nextData.lessonId) {
-            goNextBtn.style.display = "block";
+            goNextBtn.style.display = "inline-block";
+            goNextBtn.disabled = false;
             goNextBtn.textContent = "Следующий урок";
-            goNextBtn.onclick = () => {
+            goNextBtn.addEventListener("click", () => {
                 window.location.href = `/lesson.html?id=${nextData.lessonId}`;
-            };
+            });
         } else {
             goNextBtn.style.display = "none";
         }
 
         goCourseBtn.textContent = "К курсу";
-        goCourseBtn.onclick = () => {
+        goCourseBtn.addEventListener("click", () => {
             window.location.href = `/courses/${courseSlug}`;
-        };
-
-        modal.classList.remove("hidden");
+        });
 
     } catch (err) {
         console.error(err);
@@ -134,7 +144,6 @@ completeBtn.addEventListener("click", async () => {
         completeBtn.disabled = false;
     }
 });
-
 
 /* ================== BACK ================== */
 backBtn.addEventListener("click", () => {

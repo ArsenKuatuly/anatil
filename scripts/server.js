@@ -1299,6 +1299,58 @@ async function resetCourseProgress(db, userId, courseId) {
     `, [userId, courseId]);
 }
 
+app.get("/api/admin/tasks", isAdmin, async (req, res) => {
+    try {
+        const [tasks] = await db.execute(`
+            SELECT t.id, t.title, t.description, t.pass_score, c.title AS course_title
+            FROM course_tasks t
+            JOIN courses c ON c.id = t.course_id
+            ORDER BY c.id, t.id
+        `);
+        res.json({ success: true, tasks });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+
+app.patch("/api/task/:taskId", isAdmin, async (req, res) => {
+    const { title, description, pass_score } = req.body;
+    const taskId = req.params.taskId;
+
+    try {
+        await db.execute(`
+            UPDATE course_tasks
+            SET title = ?, description = ?, pass_score = ?
+            WHERE id = ?
+        `, [title, description, pass_score, taskId]);
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.patch("/api/task-question/:questionId", isAdmin, async (req, res) => {
+    const { question, options } = req.body;
+    const questionId = req.params.questionId;
+
+    try {
+        await db.execute(`
+            UPDATE task_questions
+            SET question = ?, options = ?
+            WHERE id = ?
+        `, [question, options, questionId]);
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
 
 
 
