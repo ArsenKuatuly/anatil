@@ -3,18 +3,16 @@ document.addEventListener("DOMContentLoaded", loadCourse);
 async function loadCourse() {
     const slug = window.location.pathname.split("/").pop();
 
-    const res = await fetch(`/api/course/${slug}`, {
-        credentials: "include"
-    });
-
-    if (!res.ok) {
+    try {
+        const res = await authFetch(`/api/course/${slug}`);
+        const data = await res.json();
+        renderModules(data.modules);
+    } catch (err) {
+        console.error("Ошибка загрузки курса:", err);
         alert("Не удалось загрузить курс");
-        return;
     }
-
-    const data = await res.json();
-    renderModules(data.modules);
 }
+
 
 function renderModules(modules) {
     const container = document.getElementById("modules");

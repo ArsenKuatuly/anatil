@@ -17,11 +17,19 @@ const app = express();
 
 app.use(
     session({
+        name: "anatyl.sid",
         secret: "very-secret-key",
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        rolling: true,
+        cookie: {
+            httpOnly: true,
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 7
+        }
     })
 );
+
 
 app.use(express.static("public"));
 
@@ -520,11 +528,13 @@ app.get("/dashboard", auth, (req, res) => {
 });
 
 /* ================= LOGOUT ================= */
-app.get("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
     req.session.destroy(() => {
-        res.redirect("/");
+        res.clearCookie("anatıl.sid");
+        res.json({ success: true });
     });
 });
+
 
 /* ================= START ================= */
 
@@ -637,7 +647,8 @@ app.get("/api/my-course", auth, async (req, res) => {
         await db.execute(`
             INSERT INTO user_course_progress (user_id, course_id, completed)
             VALUES (?, ?, 0)
-                ON DUPLICATE KEY UPDATE completed = 0
+                ON DUPLICATE KEY UPDATE completed = completed
+
         `, [userId, course.id]);
 
         res.json({
@@ -732,7 +743,8 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
     try {
         /* ================== 1️⃣ ЗАВЕРШАЕМ УРОК ================== */
         await db.execute(`
-            INSERT INTO user_lesson_progress (user_id, lesson_id, completed, completed_at)
+            INSERT INTO user_lesson_progress
+                (user_id, lesson_id, completed, completed_at)
             VALUES (?, ?, 1, NOW())
                 ON DUPLICATE KEY UPDATE
                                      completed = 1,
@@ -770,7 +782,8 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
 
         /* ================== 4️⃣ ЗАВЕРШАЕМ МОДУЛЬ ================== */
         await db.execute(`
-            INSERT INTO user_module_progress (user_id, module_id, completed, completed_at)
+            INSERT INTO user_module_progress
+                (user_id, module_id, completed, completed_at)
             VALUES (?, ?, 1, NOW())
                 ON DUPLICATE KEY UPDATE
                                      completed = 1,
@@ -792,7 +805,7 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
             return res.json({ success: true });
         }
 
-        /* ================== 6️⃣ ЗАВЕРШАЕМ КУРС ================== */
+        /* ================== 6️⃣ ЗАВЕРШАЕМ КУРС (БЕЗ ПОВЫШЕНИЯ УРОВНЯ) ================== */
         await db.execute(`
             UPDATE user_course_progress
             SET completed = 1,
@@ -801,27 +814,7 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
               AND course_id = ?
         `, [userId, courseId]);
 
-        /* ================== 7️⃣ ОБНОВЛЯЕМ УРОВЕНЬ ================== */
-        const [[course]] = await db.execute(`
-            SELECT level
-            FROM courses
-            WHERE id = ?
-        `, [courseId]);
-
-        if (course) {
-            const currentIndex = LEVELS.indexOf(course.level);
-            const nextLevel = LEVELS[currentIndex + 1];
-
-            if (nextLevel) {
-                await db.execute(`
-                    UPDATE users
-                    SET current_level = ?
-                    WHERE id = ?
-                `, [nextLevel, userId]);
-            }
-        }
-
-        /* ================== 8️⃣ ОТВЕТ ================== */
+        /* ================== 7️⃣ ОТВЕТ ================== */
         res.json({
             success: true,
             courseCompleted: true
@@ -832,6 +825,7 @@ app.post("/api/lesson/complete", auth, async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
 
 app.get("/api/lessons/progress/current", auth, async (req, res) => {
     try {
@@ -996,7 +990,21 @@ app.get("/api/course/:slug", auth, async (req, res) => {
             return res.json({ success: false });
         }
 
-        /* 2️⃣ модули курса */
+        /* 2️⃣ гарантируем строку прогресса */
+        await db.execute(`
+            INSERT IGNORE INTO user_course_progress
+            (user_id, course_id, completed, final_passed)
+            VALUES (?, ?, 0, 0)
+        `, [userId, course.id]);
+
+        /* 3️⃣ прогресс курса */
+        const [[progress]] = await db.execute(`
+            SELECT completed, final_passed
+            FROM user_course_progress
+            WHERE user_id = ? AND course_id = ?
+        `, [userId, course.id]);
+
+        /* 4️⃣ модули курса */
         const [modules] = await db.execute(`
             SELECT
                 m.id,
@@ -1004,30 +1012,28 @@ app.get("/api/course/:slug", auth, async (req, res) => {
                 m.position,
                 IF(ump.completed = 1, 1, 0) AS completed,
                 IF(
-                        m.position = 1,
-                        0,
-                        EXISTS (
-                            SELECT 1
-                            FROM modules pm
-                                     LEFT JOIN user_module_progress ump2
-                                               ON ump2.module_id = pm.id
-                                                   AND ump2.user_id = ?
-                            WHERE pm.course_id = m.course_id
-                              AND pm.position = m.position - 1
-                              AND (ump2.completed IS NULL OR ump2.completed = 0)
-
-                        )
+                    m.position = 1,
+                    0,
+                    EXISTS (
+                        SELECT 1
+                        FROM modules pm
+                        LEFT JOIN user_module_progress ump2
+                            ON ump2.module_id = pm.id
+                           AND ump2.user_id = ?
+                        WHERE pm.course_id = m.course_id
+                          AND pm.position = m.position - 1
+                          AND (ump2.completed IS NULL OR ump2.completed = 0)
+                    )
                 ) AS locked
             FROM modules m
-                     LEFT JOIN user_module_progress ump
-                               ON ump.module_id = m.id
-                                   AND ump.user_id = ?
+            LEFT JOIN user_module_progress ump
+                ON ump.module_id = m.id
+               AND ump.user_id = ?
             WHERE m.course_id = ?
             ORDER BY m.position
         `, [userId, userId, course.id]);
 
-
-        /* 3️⃣ уроки для каждого модуля */
+        /* 5️⃣ уроки внутри модулей */
         for (const module of modules) {
             const [lessons] = await db.execute(`
                 SELECT
@@ -1043,20 +1049,27 @@ app.get("/api/course/:slug", auth, async (req, res) => {
                 ORDER BY l.position
             `, [userId, module.id]);
 
-            module.lessons = lessons; // 🔥 ВАЖНО
+            module.lessons = lessons;
         }
 
+        /* 6️⃣ ЕДИНСТВЕННЫЙ ответ */
         res.json({
             success: true,
-            course,
+            course: {
+                ...course,
+                completed: Number(progress.completed) === 1,
+                final_passed: Number(progress.final_passed) === 1
+            },
             modules
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("❌ /api/course/:slug error:", err);
         res.status(500).json({ success: false });
     }
 });
+
+
 
 
 
@@ -1102,6 +1115,90 @@ app.get("/api/lesson/:id", auth, lessonAccess, async (req, res) => {
     }
 });
 
+app.get("/api/course/:courseId/task", auth, async (req, res) => {
+    const [[task]] = await db.execute(`
+        SELECT id, title, description, pass_score
+        FROM course_tasks
+        WHERE course_id = ?
+    `, [req.params.courseId]);
+
+    res.json({ success: true, task });
+});
+
+
+app.get("/api/task/:taskId/questions", auth, async (req, res) => {
+    const [questions] = await db.execute(`
+        SELECT id, question, options
+        FROM task_questions
+        WHERE task_id = ?
+    `, [req.params.taskId]);
+
+    res.json({ success: true, questions });
+});
+
+
+app.post("/api/task/:taskId/submit", auth, async (req, res) => {
+    const userId = req.session.userId;
+    const { score } = req.body;
+    const taskId = req.params.taskId;
+
+    const [[task]] = await db.execute(`
+        SELECT pass_score, course_id
+        FROM course_tasks
+        WHERE id = ?
+    `, [taskId]);
+
+    const passed = score >= task.pass_score;
+
+    await db.execute(`
+        INSERT INTO user_task_results
+        (user_id, task_id, score, passed, completed_at)
+        VALUES (?, ?, ?, ?, NOW())
+        ON DUPLICATE KEY UPDATE
+            score = VALUES(score),
+            passed = VALUES(passed),
+            completed_at = NOW()
+    `, [userId, taskId, score, passed]);
+
+    if (!passed) {
+        return res.json({ success: true, passed: false });
+    }
+
+    // 🔥 ТОЛЬКО ЗДЕСЬ повышаем уровень
+    const [[course]] = await db.execute(`
+        SELECT level FROM courses WHERE id = ?
+    `, [task.course_id]);
+
+    const currentIndex = LEVELS.indexOf(course.level);
+    const nextLevel = LEVELS[currentIndex + 1];
+
+    if (nextLevel) {
+        await db.execute(`
+            UPDATE users SET current_level = ? WHERE id = ?
+        `, [nextLevel, userId]);
+    }
+
+    res.json({ success: true, passed: true, nextLevel });
+});
+
+app.get("/api/task/:taskId", auth, async (req, res) => {
+    try {
+        const [[task]] = await db.execute(`
+            SELECT id, title, description, pass_score, course_id
+            FROM course_tasks
+            WHERE id = ?
+        `, [req.params.taskId]);
+
+        if (!task) {
+            return res.status(404).json({ success: false, message: "Задание не найдено" });
+        }
+
+        res.json({ success: true, task });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
 
 
 app.get("/api/module/:id/lessons", auth, async (req, res) => {

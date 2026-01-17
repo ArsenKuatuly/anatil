@@ -45,7 +45,6 @@ async function loadLesson() {
 
 loadLesson();
 
-/* ================== COMPLETE LESSON ================== */
 completeBtn.addEventListener("click", async () => {
     try {
         completeBtn.disabled = true;
@@ -66,24 +65,34 @@ completeBtn.addEventListener("click", async () => {
 
         /* ================== КУРС ЗАВЕРШЁН ================== */
         if (data.courseCompleted) {
-            modalTitle.textContent = "Курс завершён 🎓";
 
-            if (data.nextCourse) {
-                modalText.textContent = `Следующий курс: «${data.nextCourse.title}»`;
-                goNextBtn.style.display = "block";
-                goNextBtn.textContent = "Перейти к следующему курсу";
+            modalTitle.textContent = "Поздравляем! 🎉";
+
+            // Текст для всех курсов пройдено
+            modalText.textContent = "Вы прошли все уроки. Чтобы пройти на следующий курс, пройдите итоговое задание.";
+
+            // Кнопка "К курсу"
+            goCourseBtn.style.display = "inline-block";
+            goCourseBtn.textContent = "К курсу";
+            goCourseBtn.onclick = () => {
+                window.location.href = `/courses/${courseSlug}`;
+            };
+
+            // Кнопка "Итоговое задание"
+            goNextBtn.style.display = "inline-block";
+            goNextBtn.textContent = "Итоговое задание";
+
+            // Берём id финального задания через API
+            const taskRes = await authFetch(`/api/course/${data.courseId}/task`);
+            const taskData = await taskRes.json();
+
+            if (taskData.success && taskData.task) {
                 goNextBtn.onclick = () => {
-                    window.location.href = `/courses/${data.nextCourse.slug}`;
+                    window.location.href = `/task.html?taskId=${taskData.task.id}`;
                 };
             } else {
-                modalText.textContent = "Поздравляем! Вы прошли все курсы 🎉";
-                goNextBtn.style.display = "none";
+                goNextBtn.disabled = true;
             }
-
-            goCourseBtn.textContent = "К списку курсов";
-            goCourseBtn.onclick = () => {
-                window.location.href = "/dashboard.html";
-            };
 
             modal.classList.remove("hidden");
             return;
@@ -125,6 +134,7 @@ completeBtn.addEventListener("click", async () => {
         completeBtn.disabled = false;
     }
 });
+
 
 /* ================== BACK ================== */
 backBtn.addEventListener("click", () => {

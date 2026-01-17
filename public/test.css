@@ -1,3 +1,19 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f6fa;
+    color: #1f2937;
+}
+
+button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
 .exam {
     max-width: 1100px;
     margin: 0 auto;
@@ -15,9 +31,11 @@
 }
 
 .exam__logo {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
 }
+
 
 .exam__timer {
     font-weight: 600;
@@ -70,8 +88,9 @@
 }
 
 .exam__question {
-    font-size: 18px;
-    margin-bottom: 24px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 /* ANSWERS */
@@ -85,7 +104,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-
+    font-size: 15px;
+    font-weight: 500;
     padding: 12px 16px;
     border: 1px solid #dddddd;
     border-radius: 8px;

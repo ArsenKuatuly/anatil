@@ -18,9 +18,11 @@ function humanLevel(level) {
 }
 
 /* ===== ПОСЛЕДНИЙ РЕЗУЛЬТАТ ===== */
-fetch("/api/my-result")
-    .then(res => res.json())
-    .then(data => {
+(async () => {
+    try {
+        const res = await authFetch("/api/my-result");
+        const data = await res.json();
+
         if (!data.success || !data.result) {
             resultBlock.innerHTML = `
                 <p>
@@ -41,11 +43,12 @@ fetch("/api/my-result")
         `;
 
         actionsBlock.style.display = "block";
-    })
-    .catch(err => {
+
+    } catch (err) {
         console.error(err);
         resultBlock.innerHTML = "<p>Ошибка загрузки результата</p>";
-    });
+    }
+})();
 
 /* ===== СДАТЬ ТЕСТ ЗАНОВО ===== */
 retryBtn.addEventListener("click", () => {
@@ -53,7 +56,7 @@ retryBtn.addEventListener("click", () => {
 });
 
 /* ===== ИСТОРИЯ ПОПЫТОК ===== */
-historyBtn.addEventListener("click", () => {
+historyBtn.addEventListener("click", async () => {
     const isVisible = historyBlock.style.display === "block";
 
     if (isVisible) {
@@ -66,26 +69,28 @@ historyBtn.addEventListener("click", () => {
     historyBlock.style.display = "block";
     historyBlock.innerHTML = "Загрузка истории...";
 
-    fetch("/api/test-history")
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !data.results || data.results.length === 0) {
-                historyBlock.innerHTML = "<p>История пуста</p>";
-                return;
-            }
+    try {
+        const res = await authFetch("/api/test-history");
+        const data = await res.json();
 
-            historyBlock.innerHTML = data.results.map((r, i) => `
-                <div style="margin-bottom:10px;">
-                    <b>Попытка ${i + 1}</b><br>
-                    Балл: ${r.total_score} |
-                    Уровень: ${humanLevel(r.level)}<br>
-                    <span style="opacity:0.6;font-size:12px">
-                        ${new Date(r.created_at).toLocaleString()}
-                    </span>
-                </div>
-            `).join("");
-        })
-        .catch(() => {
-            historyBlock.innerHTML = "<p>Ошибка загрузки истории</p>";
-        });
+        if (!data.success || !data.results || data.results.length === 0) {
+            historyBlock.innerHTML = "<p>История пуста</p>";
+            return;
+        }
+
+        historyBlock.innerHTML = data.results.map((r, i) => `
+            <div style="margin-bottom:10px;">
+                <b>Попытка ${i + 1}</b><br>
+                Балл: ${r.total_score} |
+                Уровень: ${humanLevel(r.level)}<br>
+                <span style="opacity:0.6;font-size:12px">
+                    ${new Date(r.created_at).toLocaleString()}
+                </span>
+            </div>
+        `).join("");
+
+    } catch (e) {
+        console.error(e);
+        historyBlock.innerHTML = "<p>Ошибка загрузки истории</p>";
+    }
 });
