@@ -1,17 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const toggles = document.querySelectorAll(".js-toggle-password");
+// Универсальный показ/скрытие пароля.
+// Работает для всех блоков, где есть:
+//  - input.js-password
+//  - img.js-toggle-password (рядом с ним, в том же .auth__password-wrapper)
 
-    toggles.forEach(toggle => {
-        toggle.addEventListener("click", () => {
-            const wrapper = toggle.closest(".auth__password-wrapper");
-            const input = wrapper.querySelector(".js-password");
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.js-toggle-password');
+  if (!btn) return;
 
-            const isHidden = input.type === "password";
+  const wrapper = btn.closest('.auth__password-wrapper');
+  if (!wrapper) return;
 
-            input.type = isHidden ? "text" : "password";
-            toggle.src = isHidden
-                ? "imgs/dshowpass.png"
-                : "imgs/showpass.png";
-        });
-    });
+  const input = wrapper.querySelector('.js-password');
+  if (!input) return;
+
+  const isHidden = input.getAttribute('type') === 'password';
+  input.setAttribute('type', isHidden ? 'text' : 'password');
+
+  btn.classList.toggle('is-visible', isHidden);
+
+  // Если у тебя есть отдельная иконка для "скрыть", можешь раскомментировать:
+  // btn.src = isHidden ? '/imgs/hidepass.png' : '/imgs/showpass.png';
 });

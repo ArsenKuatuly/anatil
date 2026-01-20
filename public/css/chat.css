@@ -1,0 +1,296 @@
+/* =========================
+   CHAT (старый красивый)
+   ========================= */
+
+/* Фаб-кнопка */
+.chat-fab{
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 60;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+
+    /* ВАЖНО: размеры контейнера, чтобы ping/badge позиционировались правильно */
+    width: 56px;
+    height: 56px;
+}
+
+@media (min-width: 640px){
+    .chat-fab{ right: 24px; bottom: 24px; width: 64px; height: 64px; }
+}
+
+.fab-circle{
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-2));
+    box-shadow: var(--shadow-md);
+    display: grid;
+    place-items: center;
+    transition: transform .2s ease, box-shadow .2s ease;
+    color:#fff;
+}
+
+.chat-fab:hover .fab-circle{
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
+
+.fab-circle svg{
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+@media (min-width: 640px){
+    .fab-circle svg{ width: 26px; height: 26px; }
+}
+
+/* Пульсация под кнопкой */
+.fab-ping{
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--blue);
+    opacity: .75;
+    animation: ping 1.6s infinite;
+    pointer-events: none;
+}
+
+/* Бейдж-иконка */
+.fab-badge{
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--orange);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+}
+.fab-badge svg{
+    width: 12px;
+    height: 12px;
+    color: #fff;
+}
+
+/* Оверлей чата */
+.chat{
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: grid;
+    align-items: end;
+    background: rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(2px);
+}
+
+/* Окно чата */
+.chat-window{
+    width: 100%;
+    height: 70vh;
+    max-height: 70vh;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+/* Хедер */
+.chat-head{
+    background: linear-gradient(90deg, var(--blue), var(--blue-2));
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chat-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.20);
+    display: grid;
+    place-items: center;
+}
+.chat-avatar svg{
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+.chat-head-text{ flex: 1; }
+.chat-title{ color:#fff; font-weight: 900; font-size: 18px; }
+.chat-subtitle{ color: rgba(255,255,255,0.80); font-size: 13px; }
+
+/* Кнопка закрытия */
+.icon-btn{
+    border: 0;
+    background: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.chat-close{
+    background: rgba(255,255,255,0.10);
+    color:#fff;
+    font-size: 18px;
+    line-height: 1;
+}
+.chat-close:hover{ background: rgba(255,255,255,0.18); }
+
+/* Сообщения */
+.chat-body{
+    padding: 16px;
+    background: var(--bg);
+    overflow: auto;
+    display: grid;
+    gap: 12px;
+}
+
+/* ОДНО сообщение (контейнер) */
+.msg{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    /* ключ к “нет большого height” */
+    width: fit-content;
+    max-width: 80%;
+}
+
+/* Выравнивание */
+.msg--assistant{ justify-self: start; align-items: flex-start; }
+.msg--user{ justify-self: end; align-items: flex-end; }
+
+/* Пузырь */
+.msg__bubble{
+    padding: 10px 12px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+/* Пузырь ассистента */
+.msg--assistant .msg__bubble{
+    background: #fff;
+    color: var(--text);
+    border: 1px solid #F3F4F6;
+    box-shadow: var(--shadow-sm);
+    border-bottom-left-radius: 6px;
+}
+
+/* Пузырь пользователя */
+.msg--user .msg__bubble{
+    background: var(--blue);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+}
+
+/* Время */
+.msg__time{
+    font-size: 11px;
+    opacity: .65;
+    padding: 0 6px;
+}
+
+/* Ввод */
+.chat-input{
+    padding: 14px 14px 10px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+}
+
+/* поддержка твоей разметки: там <div> без класса */
+.chat-input > div:first-child,
+.chat-input__row{
+    display:flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chat-input input{
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 12px 14px;
+    outline: none;
+}
+
+.chat-input input:focus{
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.chat-send{
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 0;
+    background: var(--blue);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color:#fff;
+    transition: background-color .15s ease, transform .15s ease;
+}
+.chat-send:hover{ background: var(--blue-2); }
+.chat-send:active{ transform: translateY(1px); }
+
+.chat-hint{
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6B7280;
+    text-align: center;
+}
+
+/* Desktop размеры (как раньше) */
+@media (min-width: 640px) {
+    .chat{
+        align-items: end;
+        justify-items: end;
+        padding: 0 24px 96px 24px;
+        background: transparent; /* на десктопе можно без затемнения */
+        backdrop-filter: none;
+    }
+
+    .chat-window{
+width: 400px;
+height: 600px;
+max-height: 600px;
+border-radius: var(--radius-2xl);
+}
+}
+@media (min-width: 1024px) {
+    .chat-window{ width: 420px; }
+}
+
+/* Animations */
+@keyframes ping{
+    75%, 100%{ transform: scale(2); opacity: 0; }
+}
+
+
+[hidden] {
+    display: none !important;
+}
+
+.chat[hidden] {
+    display: none !important;
+}
+
+

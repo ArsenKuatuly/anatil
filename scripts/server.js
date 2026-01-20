@@ -1,3 +1,17 @@
+const dotenv = require("dotenv");
+dotenv.config();
+console.log(
+    process.env.OPENAI_API_KEY
+        ? "✅ OPENAI KEY LOADED"
+        : "❌ OPENAI KEY NOT FOUND"
+);
+
+const OpenAI = require("openai");
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
 const express = require("express");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
@@ -14,6 +28,20 @@ const db = require("../db");
 require("../models/user.model");
 
 const app = express();
+const cors = require("cors");
+
+// Разрешаем запросы с WebStorm (63342)
+app.use(cors({
+    origin: "http://localhost:63342",
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+}));
+
+
+// обязательно, иначе req.body будет undefined
+app.use(express.json());
+
 
 app.use(
     session({
@@ -87,8 +115,51 @@ async function unlockNextModule(userId, currentModuleId) {
 
 
 
-/* ================= MIDDLEWARE ================= */
+
 app.use(express.json());
+
+const AI_SYSTEM_PROMPT = `
+Ты — ИИ-ассистент образовательной платформы AnaTil.
+
+Правила:
+- Язык ответов: русский
+- Стиль: дружелюбный, спокойный, профессиональный
+- Отвечай кратко, по шагам
+- Если вопрос про урок — объясни тему и приведи пример
+- Если пользователь просит ответ на тест или задание — НЕ давай готовый ответ,
+  а помоги понять, как его решить
+- Если вопрос непонятен — задай уточняющий вопрос
+- Не используй смайлики
+- Не выдумывай факты, которых нет
+`;
+
+
+app.post("/api/ai/chat", async (req, res) => {
+    try {
+        const { message } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ error: "Message is required" });
+        }
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: AI_SYSTEM_PROMPT },
+                { role: "user", content: message }
+            ],
+            temperature: 0.4,
+        });
+
+        res.json({
+            reply: completion.choices[0].message.content
+        });
+
+    } catch (err) {
+        console.error("❌ AI error:", err);
+        res.status(500).json({ error: "AI error" });
+    }
+});
 
 
 
@@ -194,6 +265,8 @@ async function lessonAccess(req, res, next) {
         });
     }
 }
+
+
 
 function isAdmin(req, res, next) {
     if (!req.session?.userId) {
@@ -831,70 +904,82 @@ app.get("/api/lessons/progress/current", auth, async (req, res) => {
     try {
         const userId = req.session.userId;
 
-        /* 1️⃣ уровень пользователя */
-        const [[user]] = await db.execute(`
-            SELECT current_level
-            FROM users
-            WHERE id = ?
-        `, [userId]);
+        // 1) уровень пользователя
+        const [[user]] = await db.execute(
+            `SELECT current_level FROM users WHERE id = ?`,
+            [userId]
+        );
 
         if (!user?.current_level) {
-            return res.json({ success: false });
+            return res.json({ success: false, message: "Уровень не задан" });
         }
 
-        /* 2️⃣ текущий курс по уровню */
-        const [[course]] = await db.execute(`
-            SELECT id, slug, title, level
-            FROM courses
-            WHERE level = ?
-                LIMIT 1
-        `, [user.current_level]);
+        // 2) курс по уровню
+        const [[course]] = await db.execute(
+            `
+                SELECT id, slug, title, level
+                FROM courses
+                WHERE level = ?
+                    LIMIT 1
+            `,
+            [user.current_level]
+        );
 
         if (!course) {
-            return res.json({ success: false });
+            return res.json({ success: false, message: "Курс не найден" });
         }
 
-        /* 3️⃣ уроки курса */
-        const [lessons] = await db.execute(`
-            SELECT
-                l.id,
-                l.title,
-                IF(ulp.completed = 1, 1, 0) AS completed
-            FROM lessons l
-                     JOIN modules m ON m.id = l.module_id
-                     LEFT JOIN user_lesson_progress ulp
-                               ON ulp.lesson_id = l.id
-                                   AND ulp.user_id = ?
-            WHERE m.course_id = ?
-            ORDER BY m.position, l.position
-        `, [userId, course.id]);
-
-        if (!lessons.length) {
-            return res.json({
-                success: true,
-                course,
-                percent: 0,
-                lastLesson: null,
-                nextLesson: null
-            });
-        }
-
-        const completedLessons = lessons.filter(l => l.completed);
-        const percent = Math.round(
-            (completedLessons.length / lessons.length) * 100
+        // 3) количество модулей
+        const [[modulesCntRow]] = await db.execute(
+            `SELECT COUNT(*) AS modules_count FROM modules WHERE course_id = ?`,
+            [course.id]
         );
+        const modulesCount = Number(modulesCntRow?.modules_count || 0);
+
+        // 4) уроки курса + прогресс пользователя
+        const [lessons] = await db.execute(
+            `
+      SELECT
+        l.id,
+        l.title,
+        m.position AS module_pos,
+        l.position AS lesson_pos,
+        IF(ulp.completed = 1, 1, 0) AS completed
+      FROM lessons l
+      JOIN modules m ON m.id = l.module_id
+      LEFT JOIN user_lesson_progress ulp
+        ON ulp.lesson_id = l.id
+       AND ulp.user_id = ?
+      WHERE m.course_id = ?
+      ORDER BY m.position, l.position
+      `,
+            [userId, course.id]
+        );
+
+        const totalLessons = lessons.length;
+        const completedLessonsArr = lessons.filter((x) => Number(x.completed) === 1);
+        const completedLessons = completedLessonsArr.length;
+
+        const percent = totalLessons
+            ? Math.round((completedLessons / totalLessons) * 100)
+            : 0;
+
+        const lastLesson = completedLessonsArr.at(-1) || null;
+        const nextLesson = lessons.find((x) => Number(x.completed) !== 1) || null;
 
         res.json({
             success: true,
             course,
-            percent,
-            lastLesson: completedLessons.at(-1) || null,
-            nextLesson: lessons.find(l => !l.completed) || null
+            modulesCount,       // ✅ "Длительность" = N модулей
+            totalLessons,       // ✅ всего уроков
+            completedLessons,   // ✅ завершено уроков
+            percent,            // ✅ %
+            lastLesson,
+            nextLesson
         });
-
     } catch (err) {
         console.error("❌ current progress error:", err);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: "Ошибка сервера" });
     }
 });
 

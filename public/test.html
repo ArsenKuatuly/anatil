@@ -1,150 +1,111 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Онлайн тест</title>
-    <link rel="stylesheet" href="test.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Онлайн тест</title>
+  <link rel="stylesheet" href="css/test.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<div class="exam">
+<div class="exam" id="examRoot">
+  <header class="exam__header">
+    <div class="exam__logo">Тест на казахский</div>
 
-    <header class="exam__header">
-        <div class="exam__logo">Тест на казахский</div>
+    <div class="exam__timer" id="timer">40:00</div>
 
-        <div class="exam__timer" id="timer"></div>
+    <button class="exam__finish" type="button" id="finishBtn">Завершить тестирование</button>
+  </header>
 
-        <button class="exam__finish" type="button">
-            Завершить тестирование
-        </button>
-    </header>
+  <nav class="exam__subjects" aria-label="Разделы теста">
+    <button class="exam__subject exam__subject--active" type="button" data-subject="math">Перевод слов</button>
+    <button class="exam__subject" type="button" data-subject="reading">Грамотность</button>
+    <button class="exam__subject" type="button" data-subject="listening">Слушание</button>
+  </nav>
 
-    <nav class="exam__subjects">
-        <button class="exam__subject exam__subject--active" data-subject="math">
-            Перевод слов
-        </button>
-        <button class="exam__subject" data-subject="reading">
-            Грамотность
-        </button>
-        <button class="exam__subject" data-subject="listening">
-            Слушание
-        </button>
-    </nav>
+  <div class="exam__card">
 
-
-    <div class="exam__card">
-
-
-
-        <!-- Общая аудиозапись для всего раздела -->
-        <div class="exam__audio exam__audio--global" id="globalAudioBlock">
-            <p class="exam__audio-title">Аудио для всего задания</p>
-            <audio controls id="globalAudio">
-                <source src="audio/textexam.mp3" type="audio/mpeg">
-                Ваш браузер не поддерживает аудио.
-            </audio>
-        </div>
-        <div class="exam__info">
-            <span class="exam__counter">
-                Вопрос: <b id="current">1</b>/10
-            </span>
-            <span class="exam__type">
-                Тип: один правильный ответ
-            </span>
-        </div>
-
-
-
-
-
-        <div class="exam__question" id="question"></div>
-
-        <div class="exam__answers" id="answers"></div>
-
-        <div class="exam__footer">
-            <span class="exam__progress" id="progress">
-                1 / 10
-            </span>
-
-            <button class="exam__btn exam__btn--prev" id="prevBtn" disabled>
-                ← Предыдущий
-            </button>
-
-            <button class="exam__next" id="nextBtn" disabled>
-                Следующий вопрос →
-            </button>
-        </div>
-
+    <!-- Общая аудиозапись для всего раздела -->
+    <div class="exam__audio exam__audio--global" id="globalAudioBlock" hidden>
+      <p class="exam__audio-title">Аудио для всего задания</p>
+      <audio controls id="globalAudio">
+        <source src="audio/textexam.mp3" type="audio/mpeg" />
+        Ваш браузер не поддерживает аудио.
+      </audio>
     </div>
 
+    <div class="exam__info">
+      <span class="exam__counter">Вопрос: <b id="current">1</b>/10</span>
+      <span class="exam__type">Тип: один правильный ответ</span>
+    </div>
+
+    <div class="exam__question" id="question"></div>
+    <div class="exam__answers" id="answers"></div>
+
+    <div class="exam__footer">
+      <span class="exam__progress" id="progress">1 / 10</span>
+
+      <button class="exam__btn exam__btn--prev" id="prevBtn" type="button" disabled>← Предыдущий</button>
+      <button class="exam__next" id="nextBtn" type="button" disabled>Следующий вопрос →</button>
+    </div>
+  </div>
 </div>
 
-<div class="modal" id="finishModal">
-    <div class="modal__content">
-        <h3 class="modal__title">Завершить тестирование?</h3>
-        <p class="modal__text">
-            Вы уверены, что хотите завершить экзамен?
-            Все ответы будут сохранены, таймер остановится.
-        </p>
+<!-- FINISH MODAL -->
+<div class="modal" id="finishModal" aria-hidden="true">
+  <div class="modal__overlay" data-close="finish"></div>
+  <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
+    <h3 class="modal__title" id="finishTitle">Завершить тестирование?</h3>
+    <p class="modal__text">Вы уверены, что хотите завершить экзамен? Все ответы будут сохранены, таймер остановится.</p>
 
-        <div class="modal__actions">
-            <button class="modal__btn modal__btn--cancel" id="cancelFinish">
-                Отмена
-            </button>
-            <button class="modal__btn modal__btn--confirm" id="confirmFinish">
-                Завершить
-            </button>
-        </div>
+    <div class="modal__actions">
+      <button class="modal__btn modal__btn--cancel" id="cancelFinish" type="button">Отмена</button>
+      <button class="modal__btn modal__btn--confirm" id="confirmFinish" type="button">Завершить</button>
     </div>
+  </div>
 </div>
 
 <!-- RESULT MODAL -->
-<div class="modal" id="resultModal">
-    <div class="modal__overlay"></div>
+<div class="modal" id="resultModal" aria-hidden="true">
+  <div class="modal__overlay" data-close="result"></div>
 
-    <div class="modal__content result__card">
-        <h2 class="result__title">Результаты тестирования</h2>
+  <div class="modal__content result__card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <h2 class="result__title" id="resultTitle">Результаты тестирования</h2>
 
-        <div class="result__score">
-            <div class="result__circle">
-                <span id="resultPercent">0%</span>
-            </div>
-            <p class="result__level" id="resultLevel"></p>
-        </div>
-
-        <div class="result__details">
-            <div>
-                <span>Перевод слов</span>
-                <b id="mathScore"></b>
-            </div>
-            <div>
-                <span>Грамматика</span>
-                <b id="readingScore"></b>
-            </div>
-            <div>
-                <span>Слушание</span>
-                <b id="listeningScore"></b>
-            </div>
-        </div>
-
-        <div class="result__actions">
-            <button id="goHome" class="btn btn--secondary">На главную</button>
-            <button id="goProfile" class="btn btn--secondary">В профиль</button>
-            <button id="goCourses" class="btn btn--primary">
-                Перейти к курсам
-            </button>
-        </div>
+    <div class="result__score">
+      <div class="result__circle" aria-label="Процент правильных ответов">
+        <span id="resultPercent">0%</span>
+      </div>
+      <p class="result__level" id="resultLevel"></p>
     </div>
+
+    <div class="result__details">
+      <div>
+        <span>Перевод слов</span>
+        <b id="mathScore"></b>
+      </div>
+      <div>
+        <span>Грамматика</span>
+        <b id="readingScore"></b>
+      </div>
+      <div>
+        <span>Слушание</span>
+        <b id="listeningScore"></b>
+      </div>
+    </div>
+
+    <div class="result__actions">
+      <button id="goHome" class="btn btn--secondary" type="button">На главную</button>
+      <button id="goProfile" class="btn btn--secondary" type="button">В профиль</button>
+      <button id="goCourses" class="btn btn--primary" type="button">Перейти к курсам</button>
+    </div>
+  </div>
 </div>
 
-
 <script src="js/authFetch.js"></script>
-<script type="module" src="test.js"></script>
-<script src="slushanie.js"></script>
-
+<script type="module" src="js/test.js"></script>
 </body>
 </html>

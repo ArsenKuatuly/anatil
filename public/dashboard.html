@@ -1,34 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AnaTil</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/chat.css" />
+    <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
 
 <header class="header" id="header">
     <div class="header__container">
-        <div class="logo" id="logoBtn">AnaTil</div>
+        <a class="header__logo" href="index.html">AnaTil</a>
 
-
-        <nav class="nav">
-            <a href="#promo" data-key="about">О нас</a>
-            <a href="#reasons" data-key="benefits">Преимущества</a>
-            <a href="#courses" data-key="courses_nav">Курсы</a>
-            <a href="#" data-key="contacts">Контакты</a>
+        <!-- DESKTOP NAV -->
+        <nav class="header__nav nav nav--desktop">
+            <a class="nav__link" href="#promo" data-key="about">О нас</a>
+            <a class="nav__link" href="#courses" data-key="courses_nav">Курсы</a>
+            <a class="nav__link" href="#important" data-key="important">Преимущества</a>
+            <a class="nav__link" href="#contacts" data-key="contacts">Контакты</a>
         </nav>
 
+        <div class="header__actions header__actions--desktop">
+            <div class="header__actions header__actions--mobile">
 
-        <div class="header__actions">
+                <a href="/admin" id="adminBtn" style="display:none">
+                    ⚙ Админ панель
+                </a>
 
-            <a href="/admin" id="adminBtn" style="display:none">
-                ⚙ Админ панель
-            </a>
+                <a href="profile.html"><button class="btn cta" data-key="check_level">Ваш профиль</button></a>
+            </div>
+        </div>
 
-            <a href="profile.html"><button class="btn" id="cta" data-key="check_level">Ваш профиль</button></a>
+        <!-- BURGER (mobile) -->
+        <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false">
+            ☰
+        </button>
+    </div>
+
+    <!-- MOBILE MENU (добавили, но классы старые не меняли) -->
+    <div class="header__mobile" hidden>
+        <div class="header__container header__container--mobile">
+            <nav class="header__nav nav nav--mobile">
+                <a class="nav__link" href="#promo" data-key="about">О нас</a>
+                <a class="nav__link" href="#courses" data-key="courses_nav">Курсы</a>
+                <a class="nav__link" href="#important" data-key="important">Преимущества</a>
+
+                <a class="nav__link" href="#contacts" data-key="contacts">Контакты</a>
+            </nav>
+
+            <div class="header__actions header__actions--mobile">
+
+                <a href="/admin" class="adminBtn" style="display:none">
+                    ⚙ Админ панель
+                </a>
+
+                <a href="profile.html"><button class="btn cta" data-key="check_level">Ваш профиль</button></a>
+            </div>
         </div>
     </div>
+
+
 </header>
 
 <section class="tests">
@@ -190,181 +224,327 @@
 
 
 
-<section class="hero">
-    <div class="hero__top">
-        <h1 class="hero__title" data-key="hero_title">
-            Поможем поднять<br>
-            ваш казахский язык
-        </h1>
+<section class="hero" id="hero">
+    <div class="hero__container">
 
-        <p class="hero__subtitle" data-key="hero_subtitle">
-            Начните изучать казахский язык вместе с нами и
-            поднимите свой уровень до C1
-        </p>
-    </div>
-
-    <div class="hero__card">
-        <div class="hero__content">
-            <div class="badge" data-key="badge">
-                Уровни Казахского языка
+        <div class="hero__left">
+            <div class="hero__badge">
+                <span class="hero__badge-dot"></span>
+                <span class="hero__badge-text">Набор открыт</span>
             </div>
 
-            <div class="tags">
-                <span data-key="level_a1">A1 - Элементарный</span>
-                <span data-key="level_a2">A2 - Базовый</span>
-                <span data-key="level_b1">B1 - Средний</span>
-                <span data-key="level_b2">B2 - Выше среднего</span>
-                <span data-key="level_c1">C1 - Высокий</span>
+            <h1 class="hero__title" data-key="hero_title">
+                Поможем поднять<br />
+                ваш <span class="hero__title-accent">казахский язык</span>
+            </h1>
+
+            <p class="hero__subtitle" data-key="hero_subtitle">
+                Обучаем казахскому языку с нуля до уровня C1. Индивидуальный подход,
+                современные методики и гарантированный результат.
+            </p>
+
+            <div class="hero__buttons">
+                <a class="btn btn--primary btn--lg" href="http://localhost:3000/auth.html" data-key="check_level">
+                    Проверить свой уровень <span class="btn__icon">→</span>
+                </a>
+                <a class="btn btn--ghost btn--lg" href="#promo">Узнать больше</a>
             </div>
 
-            <a href="test.html"><button class="hero__btn" data-key="check_level">Проверить свой уровень</button></a>
+            <div class="hero__metrics">
+                <div class="hero__metric">
+                    <span class="hero__metric-text"><b>2000+</b> выпускников</span>
+                </div>
+                <div class="hero__metric">
+                    <span class="hero__metric-text"><b>98%</b> успеха</span>
+                </div>
+            </div>
         </div>
+
+        <aside class="hero__card">
+            <h3 class="hero__card-title">Уровни Казахского языка</h3>
+            <p class="hero__card-subtitle">Выберите подходящий для вас уровень обучения</p>
+
+            <div class="hero__levels">
+                <button class="hero__level hero__level--a1" type="button">A1</button>
+                <button class="hero__level hero__level--a2" type="button">A2</button>
+                <button class="hero__level hero__level--b1" type="button">B1</button>
+                <button class="hero__level hero__level--b2" type="button">B2</button>
+                <button class="hero__level hero__level--c1" type="button">C1</button>
+            </div>
+
+            <p class="hero__card-footnote">
+                От базового A1 до продвинутого C1 уровня владения языком
+            </p>
+        </aside>
+
     </div>
 </section>
 
-<section id="promo">
-
+<section class="promo" id="promo">
     <div class="promo__content">
         <h2 class="promo__title" data-key="promo_title">
-            AnaTil — место, где каждый,
-            независимо от уровня<br> подготовки, может изучать
-            <span class="promo__highlight">казахский язык</span>
+            AnaTil — место, где начинается свободное владение
+            <span class="promo__highlight">казахским языком</span>
         </h2>
 
         <p class="promo__subtitle" data-key="promo_subtitle">
-            Наши выпускники уверенно строят карьеру в ведущих IT-компаниях,
-            не только в Казахстане, но и за его пределами
+            Более 2000 наших выпускников успешно сдали экзамены и используют казахский
+            язык в повседневной жизни и профессиональной деятельности. Присоединяйтесь
+            к сообществу тех, кто уже достиг своих целей вместе с AnaTil.
         </p>
     </div>
-
-
-
 </section>
 
-
-<section id="reasons">
-    <h2 class="reasons__title" data-key="reasons_title">
-        9 причин, почему вы должны выбрать AnaTil
-    </h2>
-
-    <div class="reasons__grid">
-        <div class="reason">
-            <span class="reason__num">1</span>
-            <p data-key="reason_1">Программа 2025 года, которая обновляется каждые 3 месяца</p>
+<section id="reasons" class="reasons">
+    <div class="reasons__container">
+        <div class="reasons__head">
+            <h2 class="reasons__title" data-key="reasons_title">
+                9 причин, почему вы должны выбрать AnaTil
+            </h2>
+            <p class="reasons__subtitle">
+                Почему обучение с AnaTil даёт результат — быстро, понятно и с поддержкой.
+            </p>
         </div>
 
-        <div class="reason">
-            <span class="reason__num">2</span>
-            <p data-key="reason_2">Обучение с помощью AI. AnaTil использует искусственный интеллект, который общается с вами на казахском языке, объясняет ошибки и помогает говорить увереннее, как настоящий преподаватель.</p>
-        </div>
+        <div class="reasons__grid">
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">01</span>
+                    <span class="reason__ico reason__ico--blue" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_1">Программа 2025 года, которая обновляется каждые 3 месяца</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">3</span>
-            <p data-key="reason_3">Индивидуальный подход. Платформа подстраивается под ваш уровень знаний — от начального до продвинутого, предлагая задания именно для вас.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">02</span>
+                    <span class="reason__ico reason__ico--indigo" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_2">Обучение с помощью AI. AnaTil использует искусственный интеллект, который общается с вами на казахском языке, объясняет ошибки и помогает говорить увереннее, как настоящий преподаватель.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">4</span>
-            <p data-key="reason_4"> Культура и язык вместе. Вы изучаете не только язык, но и культуру, традиции и особенности казахской речи, что делает обучение более глубоким.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">03</span>
+                    <span class="reason__ico reason__ico--violet" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_3">Индивидуальный подход. Платформа подстраивается под ваш уровень знаний — от начального до продвинутого, предлагая задания именно для вас.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">5</span>
-            <p data-key="reason_5">Обучение в любое время и в любом месте. Учитесь с компьютера, планшета или телефона — когда удобно именно вам.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">04</span>
+                    <span class="reason__ico reason__ico--purple" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_4">Культура и язык вместе. Вы изучаете не только язык, но и культуру, традиции и особенности казахской речи.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">6</span>
-            <p data-key="reason_6">Прогресс и мотивация. Отслеживайте свой прогресс, проходите уровни и получайте достижения, которые мотивируют не бросать обучение.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">05</span>
+                    <span class="reason__ico reason__ico--pink" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_5">Обучение в любое время и в любом месте. Учитесь с компьютера, планшета или телефона.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">7</span>
-            <p data-key="reason_7">Современный и удобный интерфейс. Минималистичный дизайн AnaTil делает обучение приятным, понятным и не утомляющим.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">06</span>
+                    <span class="reason__ico reason__ico--rose" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_6">Прогресс и мотивация. Проходите уровни и получайте достижения, которые мотивируют не бросать обучение.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">8</span>
-            <p data-key="reason_8">Объяснения на понятном языке. Сложная грамматика казахского языка объясняется простыми словами, с примерами и переводом, чтобы обучение было лёгким и эффективным.</p>
-        </div>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">07</span>
+                    <span class="reason__ico reason__ico--orange" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_7">Современный и удобный интерфейс. Минималистичный дизайн делает обучение приятным.</p>
+            </article>
 
-        <div class="reason">
-            <span class="reason__num">9</span>
-            <p data-key="reason_9">Практика живого общения. Вы учитесь не по сухим правилам, а через реальные диалоги, которые можно использовать в жизни: в магазине, на работе, в путешествии.</p>
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">08</span>
+                    <span class="reason__ico reason__ico--amber" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_8">Объяснения на понятном языке. Сложная грамматика объясняется простыми словами.</p>
+            </article>
+
+            <article class="reason">
+                <div class="reason__top">
+                    <span class="reason__num">09</span>
+                    <span class="reason__ico reason__ico--fuchsia" aria-hidden="true"></span>
+                </div>
+                <p data-key="reason_9">Практика живого общения. Учитесь через реальные диалоги, которые используете в жизни.</p>
+            </article>
         </div>
     </div>
 </section>
 
-<section id="courses">
-    <h2 class="courses__title" data-key="courses_title">Доступные курсы</h2>
-
-    <div class="courses__grid">
-
-        <div class="course course--java">
-            <h3 data-key="course_a1_title"> A1 - Элементарный уровень</h3>
-            <p data-key="course_a1_desc">Человек понимает и использует самые простые слова и выражения.</p>
-            <div class="course__footer">
-                <span data-key="next_start">Ближайший старт:</span>
-                <button data-key="oct_18">18 октября</button>
-            </div>
+<section id="courses" class="courses">
+    <div class="courses__container">
+        <div class="courses__head">
+            <h2 class="courses__title" data-key="courses_title">Доступные курсы</h2>
+            <p class="courses__subtitle">Выберите уровень и начните обучение — от базового до продвинутого.</p>
         </div>
 
-        <div class="course course--android">
-            <h3 data-key="course_a2_title"> A2 - Базовый уровень</h3>
-            <p data-key="course_a2_desc">Понимание и использование языка в повседневных ситуациях.</p>
-            <div class="course__footer">
-                <span data-key="next_start">Ближайший старт:</span>
-                <button class="closed" data-key="closed">Запись закрыта</button>
-            </div>
-        </div>
+        <div class="courses__grid">
 
-        <div class="course course--frontend">
-            <h3 data-key="course_b1_title"> B1 - Средний уровень</h3>
-            <p data-key="course_b1_desc">Уверенное общение в большинстве жизненных ситуаций.</p>
-            <div class="course__footer">
-                <span data-key="next_start">Ближайший старт:</span>
-                <button>18 октября</button>
-            </div>
-        </div>
+            <article class="course course--java">
+                <div class="course__head course__head--a1">
+                    <div class="course__label">Уровень</div>
+                    <div class="course__level">A1</div>
+                </div>
 
-        <div class="course course--ios">
-            <h3 data-key="course_b2_title"> B2 - Уровень выше среднего</h3>
-            <p data-key="course_b2_desc">Свободное и уверенное использование языка.</p>
-            <div class="course__footer">
-                <span data-key="next_start">Ближайший старт:</span>
-                <button>18 октября</button>
-            </div>
-        </div>
+                <div class="course__body">
+                    <h3 data-key="course_a1_title">A1 - Элементарный уровень</h3>
+                    <p data-key="course_a1_desc">Человек понимает и использует самые простые слова и выражения.</p>
 
-        <div class="course course--go">
-            <h3 data-key="course_c1_title"> C1 - Высокий уровень</h3>
-            <p data-key="course_c1_desc">Почти свободное владение языком.</p>
-            <div class="course__footer">
-                <span data-key="next_start">Ближайший старт:</span>
-                <button class="closed">Запись закрыта</button>
-            </div>
-        </div>
+                    <div class="course__footer">
+                        <span data-key="next_start">Ближайший старт:</span>
+                        <button data-key="oct_18">18 октября</button>
+                    </div>
+                </div>
+            </article>
 
+            <article class="course course--android">
+                <div class="course__head course__head--a2">
+                    <div class="course__label">Уровень</div>
+                    <div class="course__level">A2</div>
+                </div>
+
+                <div class="course__body">
+                    <h3 data-key="course_a2_title">A2 - Базовый уровень</h3>
+                    <p data-key="course_a2_desc">Понимание и использование языка в повседневных ситуациях.</p>
+
+                    <div class="course__footer">
+                        <span data-key="next_start">Ближайший старт:</span>
+                        <button class="closed" data-key="closed">Запись закрыта</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="course course--frontend">
+                <div class="course__head course__head--b1">
+                    <div class="course__label">Уровень</div>
+                    <div class="course__level">B1</div>
+                </div>
+
+                <div class="course__body">
+                    <h3 data-key="course_b1_title">B1 - Средний уровень</h3>
+                    <p data-key="course_b1_desc">Уверенное общение в большинстве жизненных ситуаций.</p>
+
+                    <div class="course__footer">
+                        <span data-key="next_start">Ближайший старт:</span>
+                        <button>18 октября</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="course course--ios">
+                <div class="course__head course__head--b2">
+                    <div class="course__label">Уровень</div>
+                    <div class="course__level">B2</div>
+                </div>
+
+                <div class="course__body">
+                    <h3 data-key="course_b2_title">B2 - Уровень выше среднего</h3>
+                    <p data-key="course_b2_desc">Свободное и уверенное использование языка.</p>
+
+                    <div class="course__footer">
+                        <span data-key="next_start">Ближайший старт:</span>
+                        <button>18 октября</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="course course--go">
+                <div class="course__head course__head--c1">
+                    <div class="course__label">Уровень</div>
+                    <div class="course__level">C1</div>
+                </div>
+
+                <div class="course__body">
+                    <h3 data-key="course_c1_title">C1 - Высокий уровень</h3>
+                    <p data-key="course_c1_desc">Почти свободное владение языком.</p>
+
+                    <div class="course__footer">
+                        <span data-key="next_start">Ближайший старт:</span>
+                        <button class="closed">Запись закрыта</button>
+                    </div>
+                </div>
+            </article>
+
+        </div>
     </div>
 </section>
 
-<footer class="footer">
+<!-- AI CHAT (старый красивый) -->
+<button class="chat-fab" type="button" aria-label="Открыть чат" aria-expanded="false">
+    <span class="fab-ping" aria-hidden="true"></span>
+    <span class="fab-circle">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"
+            stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </span>
+    <span class="fab-badge" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"
+            stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </span>
+</button>
+
+<div class="chat" id="chat" hidden>
+    <div class="chat-window" role="dialog" aria-label="AI Ассистент">
+        <div class="chat-head">
+            <div class="chat-avatar">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"
+                          stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="chat-head-text">
+                <div class="chat-title">AI Ассистент</div>
+                <div class="chat-subtitle">Онлайн • Ответим быстро</div>
+            </div>
+
+            <button class="icon-btn chat-close" type="button" aria-label="Закрыть чат">
+                ✕
+            </button>
+        </div>
+
+        <div class="chat-body" id="chatBody"></div>
+
+        <div class="chat-input">
+            <div>
+                <input id="chatInput" type="text" placeholder="Напишите сообщение..." />
+                <button class="chat-send" id="chatSend" type="button">➤</button>
+            </div>
+            <div class="chat-hint">Обычно отвечаем в течение 2 минут</div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="footer" id="contacts">
     <div class="footer__container">
-
         <div class="footer__column">
             <h3 class="footer__title" data-key="footer_info">AnaTil</h3>
             <p class="footer__text" data-key="footer_text">
-                место, где каждый, независимо от уровня
-                подготовки, может изучать казахский язык
+                место, где каждый, независимо от уровня подготовки, может изучать казахский язык
             </p>
         </div>
 
         <div class="footer__column">
             <h3 class="footer__title" data-key="footer_info_title">Информация</h3>
             <ul class="footer__list">
-                <li class="footer__item"><a class="footer__link" href="#" data-key="footer_about">О нас</a></li>
-                <li class="footer__item"><a class="footer__link" href="#" data-key="footer_benefits">Преимущества</a></li>
-                <li class="footer__item"><a class="footer__link" href="#" data-key="footer_contacts">Контакты</a></li>
+                <li class="footer__item"><a class="footer__link" href="#promo" data-key="footer_about">О нас</a></li>
+                <li class="footer__item"><a class="footer__link" href="#reasons" data-key="footer_benefits">Преимущества</a></li>
+                <li class="footer__item"><a class="footer__link" href="#contacts" data-key="footer_contacts">Контакты</a></li>
             </ul>
         </div>
 
@@ -378,20 +558,19 @@
                 <li class="footer__course" data-key="footer_course_c1">Высокий уровень</li>
             </ul>
         </div>
-
-
-
     </div>
 </footer>
 
 
 
 
-<script src="js/authFetch.js"></script>
-<script src="scroll.js"></script>
-<script src="modal_startexam.js"></script>
-<script src="dashboard.js"></script>
+<script src="./js/authFetch.js"></script>
+<script src="./js/scroll.js"></script>
+<script src="./js/modal_startexam.js"></script>
+<script src="./js/dashboard.js"></script>
 <script src="./js/lastlesson.js"></script>
+<script src="./js/chat.js"></script>
+<script src="./js/header.js"></script>
 
 
 </body>

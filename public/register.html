@@ -3,67 +3,88 @@
 <head>
     <meta charset="UTF-8" />
     <title>Регистрация</title>
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
 </head>
 <body>
 
 <div class="auth auth--register">
 
-    <!-- 🔝 Верхний блок -->
-    <div class="auth__top">
-        <div class="logo">AnaTil</div>
+    <!-- Левая колонка (появится на >=1024px) -->
+    <aside class="auth__brand">
+        <div class="auth__brand-bg"></div>
 
-        <a href="/index.html" class="auth__back-btn">
-            ← Вернуться на главную
-        </a>
-    </div>
+        <div class="auth__brand-content">
+            <div class="auth__brand-logo">
+                <div class="auth__brand-mark">A</div>
+                <div class="auth__brand-name">AnaTil</div>
+            </div>
 
-    <!-- 🧾 Карточка -->
-    <div class="auth__card">
-        <h2 class="auth__title">Регистрация</h2>
+            <div class="auth__brand-line"></div>
 
-        <label class="auth__label">Логин</label>
-        <input class="auth__input" type="text" id="login" />
+            <h1 class="auth__brand-title">Создайте аккаунт</h1>
+            <p class="auth__brand-subtitle">Учите казахский по уровням и отслеживайте прогресс.</p>
 
-        <label class="auth__label">Пароль</label>
-        <div class="auth__password-wrapper">
-            <input
-                    class="auth__input auth__input--password js-password"
-                    type="password"
-                    name="password"
-            />
-            <img
-                    src="/imgs/showpass.png"
-                    alt="Показать пароль"
-                    class="auth__toggle-password js-toggle-password"
-            />
+            <div class="auth__features">
+                <div class="auth__feature">
+                    <div class="auth__feature-icon"></div>
+                    <div>
+                        <p class="auth__feature-title">Персональный прогресс</p>
+                        <p class="auth__feature-desc">Результаты, уровни и история занятий.</p>
+                    </div>
+                </div>
+
+                <div class="auth__feature">
+                    <div class="auth__feature-icon"></div>
+                    <div>
+                        <p class="auth__feature-title">Курсы по модулям</p>
+                        <p class="auth__feature-desc">Короткие уроки + практика.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </aside>
 
-        <label class="auth__label">Повторите пароль</label>
-        <div class="auth__password-wrapper">
-            <input
-                    class="auth__input auth__input--password js-password"
-                    type="password"
-                    name="passwordRepeat"
-            />
-            <img
-                    src="/imgs/showpass.png"
-                    alt="Показать пароль"
-                    class="auth__toggle-password js-toggle-password"
-            />
+    <!-- Правая часть -->
+    <main class="auth__content">
+        <div class="auth__wrap">
+
+            <div class="auth__top">
+                <div class="logo">AnaTil</div>
+
+                <a href="/index.html" class="auth__back-btn">← Вернуться на главную</a>
+            </div>
+
+            <div class="auth__card">
+                <h2 class="auth__title">Регистрация</h2>
+
+                <label class="auth__label">Логин</label>
+                <input class="auth__input" type="text" id="login" />
+
+                <label class="auth__label">Пароль</label>
+                <div class="auth__password-wrapper">
+                    <input class="auth__input auth__input--password js-password" type="password" name="password" />
+                    <img src="/imgs/showpass.png" alt="Показать пароль" class="auth__toggle-password js-toggle-password" />
+                </div>
+
+                <label class="auth__label">Повторите пароль</label>
+                <div class="auth__password-wrapper">
+                    <input class="auth__input auth__input--password js-password" type="password" name="passwordRepeat" />
+                    <img src="/imgs/showpass.png" alt="Показать пароль" class="auth__toggle-password js-toggle-password" />
+                </div>
+
+                <button class="auth__button" id="registerBtn">Создать аккаунт</button>
+
+                <p class="auth__footer">
+                    Уже есть аккаунт?
+                    <a href="/auth.html" class="auth__link">Войти</a>
+                </p>
+
+                <p class="auth__message" id="message"></p>
+            </div>
+
         </div>
-
-        <button class="auth__button" id="registerBtn">
-            Создать аккаунт
-        </button>
-
-        <p class="auth__footer">
-            Уже есть аккаунт?
-            <a href="/auth.html" class="auth__link">Войти</a>
-        </p>
-
-        <p class="auth__message" id="message"></p>
-    </div>
+    </main>
 </div>
 
 <script src="/scripts/register.js"></script>

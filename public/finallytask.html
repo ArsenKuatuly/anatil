@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Итоговое задание</title>
     <link rel="stylesheet" href="/finallytask.css">
+    <link rel="stylesheet" href="/css/chat.css">
+
 </head>
 <body>
 
@@ -24,7 +26,39 @@
     <div id="resultMessage" class="hidden"></div>
 </div>
 
+<section class="ai-assistant">
+
+    <button class="ai-assistant__toggle" type="button" aria-label="Открыть чат">
+        <img
+                class="ai-assistant__avatar"
+                src="/imgs/aichat.png"
+                alt="AI Assistant"
+        />
+    </button>
+
+
+    <div class="ai-assistant__chat">
+        <div class="ai-assistant__header">
+            <span class="ai-assistant__title">ИИ-Ассистент</span>
+            <button class="ai-assistant__close" type="button">✕</button>
+        </div>
+
+        <div class="ai-assistant__messages"></div>
+
+        <div class="ai-assistant__input">
+            <input
+                    class="ai-assistant__field"
+                    type="text"
+                    placeholder="Введите сообщение..."
+            />
+            <button class="ai-assistant__send">➤</button>
+        </div>
+    </div>
+</section>
+
 <script src="/js/authFetch.js"></script>
 <script src="/js/finallytask.js"></script>
+<script src="/js/chat.js"></script>
+
 </body>
 </html>

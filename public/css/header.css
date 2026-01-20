@@ -1,0 +1,164 @@
+/* =========================
+   Header — header.css (clean)
+========================= */
+
+:root{ --header-h: 64px; }
+@media (min-width: 1024px){ :root{ --header-h: 80px; } }
+
+/* ===== Top bar ===== */
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 10000;                 /* выше всего контента */
+    background: rgba(255,255,255,.86);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    isolation: isolate;             /* важно при backdrop-filter */
+}
+
+.header__container{
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.header__logo{
+    font-size: 24px;
+    font-weight: var(--fw-extrabold);
+    color: var(--blue);
+}
+
+/* ===== Desktop parts ===== */
+.nav{ display: flex; align-items: center; gap: 28px; }
+
+.nav__link{
+    font-weight: var(--fw-medium);
+    color: var(--text);
+    padding: 10px 10px;
+    border-radius: 12px;
+    transition: background-color .15s ease, color .15s ease;
+}
+.nav__link:hover{
+    color: var(--blue);
+    background: rgba(15,23,42,.04);
+}
+
+.header__actions{ display: flex; align-items: center; gap: 16px; }
+
+/* lang */
+.lang-switch{
+    display: inline-flex;
+    gap: 4px;
+    background: var(--bg);
+    padding: 4px;
+    border-radius: 12px;
+}
+.lang-switch__btn{
+    border: 0;
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: var(--fw-bold);
+    font-size: 13px;
+    color: #4B5563;
+}
+.lang-switch__btn--active{
+    background: #fff;
+    color: var(--blue);
+    box-shadow: var(--shadow-sm);
+}
+
+/* visibility */
+.nav--desktop,
+.header__actions--desktop{ display: none !important; }
+
+@media (min-width: 1024px){
+    .nav--desktop,
+    .header__actions--desktop{ display: flex !important; }
+    .header__burger{ display: none; }
+}
+
+/* burger */
+.header__burger{
+    border: 0;
+    background: rgba(15,23,42,.04);
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+}
+.header__burger:hover{ background: rgba(15,23,42,.08); }
+
+/* ===== Overlay (below menu, above page) ===== */
+.header__overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    background: rgba(15,23,42,.35);
+}
+
+/* ===== Mobile menu (always above overlay) ===== */
+.header__mobile{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--header-h);
+    z-index: 10002;
+    background: #fff;
+
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+
+    max-height: calc(100dvh - var(--header-h));
+    overflow: auto;
+}
+
+/* inner */
+.header__container--mobile{
+    height: auto;
+    display: grid;
+    gap: 14px;
+    padding-top: 12px;
+    padding-bottom: 14px;
+}
+
+/* IMPORTANT: mobile nav must override base flex */
+.header__mobile .nav{
+    display: grid;
+    gap: 6px;
+}
+.header__mobile .nav__link{
+    display: block;
+    width: 100%;
+    padding: 12px 12px;
+    border-radius: 12px;
+}
+
+.header__mobile .header__actions{
+    display: grid;
+    gap: 12px;
+}
+
+/* scroll lock */
+body.is-menu-open{ overflow: hidden; }
+/* ===== FINAL VISIBILITY FIX ===== */
+@media (min-width: 1024px){
+    .header__burger{ display: none !important; }
+    .nav--desktop,
+    .header__actions--desktop{ display: flex !important; }
+
+    .header__mobile{ display: none !important; } /* чтобы панель не висела на десктопе */
+}
+@media (max-width: 1023.98px){
+    .header__burger{ display: inline-flex !important; }
+    .nav--desktop,
+    .header__actions--desktop{ display: none !important; }
+}

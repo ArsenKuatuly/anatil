@@ -1,329 +1,292 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Профиль пользователя</title>
-
-    <style>
-        .profile-app {
-            display: flex;
-            min-height: 100vh;
-            background: #f4f6f8;
-            font-family: Arial, sans-serif;
-        }
-
-        .profile-sidebar {
-            width: 240px;
-            background: #1e88e5;
-            color: #fff;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .profile-sidebar__avatar-wrapper {
-            position: relative;
-            width: 96px;
-            height: 96px;
-            margin-bottom: 12px;
-        }
-
-        .profile-sidebar__avatar-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid rgba(255,255,255,0.6);
-        }
-
-        .profile-sidebar__avatar-overlay {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.45);
-            color: #fff;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .profile-sidebar__avatar-wrapper:hover
-        .profile-sidebar__avatar-overlay {
-            opacity: 1;
-        }
-
-        .profile-sidebar__welcome {
-            text-align: center;
-            font-size: 14px;
-            margin-bottom: 32px;
-            font-weight: bold;
-        }
-
-        .profile-sidebar__menu-link {
-            display: block;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 0;
-            opacity: 0.9;
-        }
-
-        .profile-sidebar__menu-link--active {
-            font-weight: bold;
-            opacity: 1;
-        }
-
-        .profile-content {
-            flex: 1;
-            padding: 40px;
-            background: #ffffff;
-            border-radius: 16px 0 0 16px;
-        }
-
-        .profile-content__title {
-            margin-top: 0;
-            margin-bottom: 24px;
-            color: #333;
-        }
-
-        .profile-form__grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px 32px;
-            max-width: 800px;
-        }
-
-        .profile-form__field-label {
-            display: block;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 6px;
-        }
-
-        .profile-form__input,
-        .profile-form__select {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            background: #f9fafb;
-        }
-
-        .profile-form__actions {
-            margin-top: 30px;
-        }
-
-        .profile-form__submit {
-            background: #1e88e5;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .profile-sidebar__back-btn {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-            margin-bottom: 20px;
-        }
-
-
-        /* убираем прижатие вниз */
-        .profile-sidebar__back-btn--top {
-            margin-top: 0;
-        }
-
-
-
-        .profile-sidebar__back-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-
-
-        #testActions button {
-            margin-right: 10px;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #1e88e5;
-            color: #fff;
-        }
-
-        #testActions button:hover {
-            opacity: 0.9;
-        }
-
-        #historyBlock {
-            background: #f7f9fc;
-            padding: 16px;
-            border-radius: 8px;
-        }
-
-        .profile-section {
-            margin-bottom: 48px;
-        }
-
-        .profile-section--level {
-            padding-top: 32px;
-            border-top: 1px solid #eee;
-        }
-
-        .profile-sidebar__logout-btn {
-            margin-top: auto; /* прижимает кнопку вниз */
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
-        .profile-sidebar__logout-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="css/profile.css" />
 </head>
 <body>
 
+<div class="profile-app" id="app">
+  <!-- ===== SIDEBAR (desktop/tablet) ===== -->
+  <aside class="profile-sidebar" aria-label="Боковое меню">
+    <div class="profile-sidebar__top">
+      <button class="profile-sidebar__back-btn" id="backBtn" type="button">
+        На главную
+      </button>
+    </div>
 
-<div class="profile-app">
-    <aside class="profile-sidebar">
+    <!-- AVATAR -->
+    <div class="profile-sidebar__user">
+      <div class="profile-sidebar__avatar-wrapper">
+        <img
+          src="assets/avatar.svg"
+          class="profile-sidebar__avatar-img"
+          id="avatarImg"
+          alt="Avatar"
+        />
 
-        <button class="profile-sidebar__back-btn" id="backBtn">
-            На главную
+        <label class="profile-sidebar__avatar-overlay" for="avatarInput">
+          Сменить
+          <input type="file" id="avatarInput" accept="image/*" hidden />
+        </label>
+      </div>
+
+      <div class="profile-sidebar__welcome">
+        Добро пожаловать,<br>
+        <span id="sidebarLogin">Асем</span>
+      </div>
+    </div>
+
+    <nav class="profile-sidebar__nav" aria-label="Разделы">
+      <a href="#profile" class="profile-sidebar__menu-link profile-sidebar__menu-link--active" data-page="profile">
+        Мой профиль
+      </a>
+      <a href="#courses" class="profile-sidebar__menu-link" data-page="courses">
+        Доступные курсы
+      </a>
+    </nav>
+
+    <div class="profile-sidebar__bottom">
+      <button class="profile-sidebar__logout-btn" id="logoutBtn" type="button">
+        Выйти из аккаунта
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div class="profile-main">
+
+    <!-- ===== MOBILE HEADER ===== -->
+    <header class="profile-mobile" aria-label="Мобильное меню">
+      <div class="profile-mobile__bar">
+        <div class="profile-mobile__user">
+          <img class="profile-mobile__avatar" id="mobileAvatar" src="assets/avatar.svg" alt="Avatar" />
+          <span class="profile-mobile__name" id="mobileName">Асем</span>
+        </div>
+
+        <button class="profile-mobile__burger" id="mobileMenuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
+          <span class="sr-only">Открыть меню</span>
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
         </button>
-        <!-- AVATAR -->
-        <div class="profile-sidebar__avatar-wrapper">
-            <img
-                    src="/uploads/avatars/default.png"
-                    class="profile-sidebar__avatar-img"
-                    id="avatarImg"
-                    alt="Avatar"
-            />
+      </div>
 
-            <label class="profile-sidebar__avatar-overlay">
-                Сменить
-                <input type="file" id="avatarInput" accept="image/*" hidden />
-            </label>
-        </div>
-
-        <div class="profile-sidebar__welcome">
-            Добро пожаловать,<br>
-            <span id="sidebarLogin">arsen1</span>
-        </div>
-
-        <nav>
-            <a href="/profile.html" class="profile-sidebar__menu-link profile-sidebar__menu-link--active">
-                Мой профиль
-            </a>
-            <a href="/mycourses.html" class="profile-sidebar__menu-link">
-                Доступные курсы
-            </a>
-
+      <!-- overlay + drawer -->
+      <div class="profile-mobile__overlay" id="mobileOverlay" hidden></div>
+      <aside class="profile-mobile__drawer" id="mobileDrawer" hidden>
+        <nav class="profile-mobile__nav">
+          <a href="#profile" class="profile-mobile__link profile-mobile__link--active" data-page="profile">Мой профиль</a>
+          <a href="#courses" class="profile-mobile__link" data-page="courses">Доступные курсы</a>
+          <button class="profile-mobile__link" id="mobileHomeBtn" type="button">На главную</button>
         </nav>
 
+        <div class="profile-mobile__drawer-bottom">
+          <button class="profile-mobile__logout" id="mobileLogoutBtn" type="button">Выйти из аккаунта</button>
+        </div>
+      </aside>
+    </header>
 
+    <main class="profile-content" id="content">
 
-        <button class="profile-sidebar__logout-btn" id="logoutBtn">
-            Выйти из аккаунта
-        </button>
-
-    </aside>
-
-    <main class="profile-content">
+      <!-- ===== PROFILE PAGE ===== -->
+      <section class="page page--active" id="pageProfile" data-page-root="profile">
+        <div class="page__head">
+          <h1 class="page__title">Мой профиль</h1>
+          <p class="page__subtitle">Управляйте своими личными данными и результатами тестирования</p>
+        </div>
 
         <!-- ===== ЛИЧНАЯ ИНФОРМАЦИЯ ===== -->
         <section class="profile-section">
-            <h2 class="profile-content__title">Личная информация</h2>
+          <h2 class="profile-content__title">Личная информация</h2>
 
-            <form class="profile-form" id="profileForm">
-                <div class="profile-form__grid">
-
-                    <div>
-                        <label class="profile-form__field-label">Имя</label>
-                        <input class="profile-form__input" name="first_name" />
-                    </div>
-
-                    <div>
-                        <label class="profile-form__field-label">Личный телефон</label>
-                        <input class="profile-form__input" name="phone" />
-                    </div>
-
-                    <div>
-                        <label class="profile-form__field-label">Фамилия</label>
-                        <input class="profile-form__input" name="last_name" />
-                    </div>
-
-                    <div>
-                        <label class="profile-form__field-label">Страна, город</label>
-                        <select class="profile-form__select" name="location">
-                            <option value="">Выберите</option>
-                            <option>Казахстан, Астана</option>
-                            <option>Казахстан, Алматы</option>
-                            <option>Казахстан, Шымкент</option>
-                            <option>Россия, Москва</option>
-                        </select>
-                    </div>
-
-
-
-                    <div>
-                        <label class="profile-form__field-label">Email</label>
-                        <input class="profile-form__input" name="email" />
-                    </div>
-
+          <form class="profile-form" id="profileForm">
+            <div class="profile-form__grid">
+                <div>
+                    <label class="profile-form__field-label">Имя</label>
+                    <input
+                            class="profile-form__input"
+                            name="first_name"
+                            placeholder="Введите ваше имя"
+                            autocomplete="given-name"
+                    />
                 </div>
+
+                <div>
+                    <label class="profile-form__field-label">Личный телефон</label>
+                    <input
+                            class="profile-form__input"
+                            name="phone"
+                            placeholder="Введите номер телефона"
+                            autocomplete="tel"
+                    />
+                </div>
+
+                <div>
+                    <label class="profile-form__field-label">Фамилия</label>
+                    <input
+                            class="profile-form__input"
+                            name="last_name"
+                            placeholder="Введите вашу фамилию"
+                            autocomplete="family-name"
+                    />
+                </div>
+
+                <div>
+                    <label class="profile-form__field-label">Страна, город</label>
+                    <select
+                            class="profile-form__select"
+                            name="location"
+                    >
+                        <option value="">Выберите страну и город</option>
+                        <option value="astana">Казахстан, Астана</option>
+                        <option value="almaty">Казахстан, Алматы</option>
+                        <option value="shymkent">Казахстан, Шымкент</option>
+                        <option value="moscow">Россия, Москва</option>
+                    </select>
+                </div>
+
+                <div class="profile-form__full">
+                    <label class="profile-form__field-label">Email</label>
+                    <input
+                            class="profile-form__input"
+                            name="email"
+                            placeholder="Введите email"
+                            autocomplete="email"
+                    />
+                    <div class="profile-form__hint">
+                        Используется для входа и уведомлений
+                    </div>
+                </div>
+            </div>
+
 
                 <div class="profile-form__actions">
-                    <button class="profile-form__submit" type="submit">
-                        Сохранить изменения
-                    </button>
-                </div>
-            </form>
+              <button class="profile-form__submit" type="submit">Сохранить изменения</button>
+            </div>
+          </form>
         </section>
-
 
         <!-- ===== ВАШ УРОВЕНЬ ===== -->
         <section class="profile-section profile-section--level">
+          <div class="profile-level__head">
             <h2 class="profile-content__title">Ваш уровень</h2>
+            <span class="level-badge" id="levelBadge">B1</span>
+          </div>
 
-            <div id="testResultBlock"></div>
+          <div id="testResultBlock"></div>
 
-            <div id="testActions" style="margin-top:20px; display:none;">
-                <button id="retryTestBtn">Сдать тест заново</button>
-                <button id="historyBtn">История попыток</button>
-            </div>
+          <div id="testActions" class="profile-level__actions" style="display:none;">
+            <button class="btn btn--secondary" id="retryTestBtn" type="button">Сдать тест заново</button>
+            <button class="btn btn--ghost" id="historyBtn" type="button">История попыток</button>
+          </div>
 
-            <div id="historyBlock" style="margin-top:20px; display:none;"></div>
+          <div id="historyBlock" style="display:none;"></div>
         </section>
+      </section>
+
+      <!-- ===== COURSES PAGE ===== -->
+      <section class="page" id="pageCourses" hidden data-page-root="courses">
+        <div class="page__head">
+          <h1 class="page__title">Доступные курсы</h1>
+          <p class="page__subtitle">Рекомендованный курс подобран специально для вашего уровня</p>
+        </div>
+
+          <section class="card card--accent">
+              <div class="course__top">
+                  <div class="course__icon" aria-hidden="true">...</div>
+
+                  <div class="course__meta">
+                      <h2 class="card__title" id="courseTitle">—</h2>
+                      <div class="course__chips">
+                          <span class="level-badge level-badge--sm" id="courseLevel">—</span>
+                          <span class="chip chip--success" id="courseRecommended">Рекомендован</span>
+                      </div>
+                  </div>
+              </div>
+
+              <p class="card__text" id="courseDesc">—</p>
+
+              <div class="course__stats">
+                  <div class="course__stat">
+                      <div class="course__stat-name">Уроков</div>
+                      <div class="course__stat-value" id="courseLessonsTotal">—</div>
+                  </div>
+                  <div class="course__stat">
+                      <div class="course__stat-name">Длительность</div>
+                      <div class="course__stat-value" id="courseDuration">—</div>
+                  </div>
+                  <div class="course__stat">
+                      <div class="course__stat-name">Завершено</div>
+                      <div class="course__stat-value" id="courseCompleted">—</div>
+                  </div>
+              </div>
+
+              <div class="course__progress">
+                  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="courseProgress">
+                      <div class="progress__bar" id="courseProgressBar" style="width:0%"></div>
+                  </div>
+                  <div class="course__progress-label">Прогресс: <b id="coursePercent">0%</b></div>
+              </div>
+
+              <div class="course__next">
+                  <div class="course__next-label">Следующий урок</div>
+                  <div class="course__next-value" id="courseNextLesson">—</div>
+              </div>
+
+              <button class="btn btn--primary" id="goCourseBtn" type="button">Перейти к курсу</button>
+          </section>
+
+          <section class="card">
+              <h2 class="card__title">Ваш прогресс</h2>
+
+              <div class="course__achieve">
+                  <div class="course__achieve-icon" aria-hidden="true">...</div>
+                  <div>
+                      <div class="course__achieve-title" id="progressTitle">—</div>
+                      <div class="course__achieve-text" id="progressText">—</div>
+                  </div>
+              </div>
+
+              <div class="course__grid">
+                  <div class="course__tile">
+                      <div class="course__tile-value" id="tileDone">—</div>
+                      <div class="course__tile-label">Уроков пройдено</div>
+                  </div>
+                  <div class="course__tile">
+                      <div class="course__tile-value" id="tileLeft">—</div>
+                      <div class="course__tile-label">Осталось уроков</div>
+                  </div>
+                  <div class="course__tile">
+                      <div class="course__tile-value" id="tileAvg">—</div>
+                      <div class="course__tile-label">Средний балл</div>
+                  </div>
+                  <div class="course__tile">
+                      <div class="course__tile-value" id="tileTime">—</div>
+                      <div class="course__tile-label">Время обучения</div>
+                  </div>
+              </div>
+          </section>
 
     </main>
-
+  </div>
 </div>
 
-<script src="js/authFetch.js"></script>
-<script src="profile.js"></script>
-<script src="usersidebar.js"></script>
-<script src="mycourses.js"></script>
-<script src="logout.js"></script>
+<!-- Toast -->
+<div class="toast" id="toast" hidden>
+  <div class="toast__inner" role="status" aria-live="polite">
+    <div class="toast__dot" aria-hidden="true"></div>
+    <div class="toast__text" id="toastText"></div>
+    <button class="toast__close" id="toastClose" type="button" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
 
+<script src="js/profile.js"></script>
 </body>
 </html>
